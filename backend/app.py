@@ -80,10 +80,19 @@ def login():
         response = supabase.auth.sign_in_with_password({"email": email, "password": password})
         session = response.session
 
+        persona_type = None
+        if response.user:
+            profile = supabase.table("users").select("persona_type").eq("id", response.user.id).single().execute()
+            persona_type = (profile.data or {}).get("persona_type")
+
         return jsonify({
             "message": "Logged in successfully.",
             "access_token": session.access_token if session else None,
-            "user": {"id": response.user.id, "email": response.user.email} if response.user else None,
+            "user": {
+                "id": response.user.id,
+                "email": response.user.email,
+                "persona_type": persona_type,
+            } if response.user else None,
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 401
@@ -105,6 +114,20 @@ def update_profile():
         ).eq("id", user_id).execute()
 
         return jsonify({"message": "Profile updated."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/categories", methods=["GET"])
+def get_categories():
+    persona_type = request.args.get("persona_type", "").strip()
+
+    if not persona_type:
+        return jsonify({"error": "persona_type is required."}), 400
+
+    try:
+        result = supabase.table("guide_categories").select("*").contains("persona_types", [persona_type]).execute()
+        return jsonify({"categories": result.data or []})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

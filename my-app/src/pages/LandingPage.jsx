@@ -38,7 +38,7 @@ export default function LandingPage() {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [selectedUserType, setSelectedUserType] = useState("neighbor");
   const [authMode, setAuthMode] = useState("login");
-  const [currentScreen, setCurrentScreen] = useState("intro");
+  const [currentScreen, setCurrentScreen] = useState(() => user ? "home" : "intro");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authMessage, setAuthMessage] = useState("");
@@ -139,6 +139,7 @@ export default function LandingPage() {
               });
               const data = await res.json();
               if (!res.ok) throw new Error(data.error || "Failed to save profile.");
+              login({ ...user, persona_type: selectedUserType });
               setCurrentScreen("home");
             } catch (err) {
               console.error(err);
@@ -154,7 +155,7 @@ export default function LandingPage() {
   if (currentScreen === "home") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <HomeScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+        <HomeScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
