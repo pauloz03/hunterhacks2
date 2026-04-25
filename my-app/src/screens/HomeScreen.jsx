@@ -1,93 +1,144 @@
-const homeContentByUserType = {
-  visitor: {
-    rolePill: "Visitor",
-    titleLine1: "Welcome to your",
-    titleLine2: "visit.",
-    aiMessage: "Top transit tips and must-see events are ready for this week.",
-    forYouItems: [
-      { icon: "🗺️", title: "Best subway route", subtitle: "Fastest path to Midtown", tag: "Transit", tagClass: "community" },
-      { icon: "🎟️", title: "Free museum day", subtitle: "Open today · No ticket fee", tag: "Culture", tagClass: "education" },
-      { icon: "🍽️", title: "Budget-friendly eats", subtitle: "Great options nearby", tag: "Food", tagClass: "health" },
-    ],
-  },
-  neighbor: {
-    rolePill: "New Neighbor",
-    titleLine1: "Welcome to your new",
-    titleLine2: "neighborhood.",
-    aiMessage: "Your local community board meeting is tomorrow at 7pm.",
-    forYouItems: [
-      { icon: "🏥", title: "Local health clinic", subtitle: "Sliding scale fees", tag: "Health", tagClass: "health" },
-      { icon: "📚", title: "Public library card", subtitle: "Free · Open today", tag: "Education", tagClass: "education" },
-      { icon: "🎉", title: "Community events", subtitle: "Free activities nearby", tag: "Community", tagClass: "community" },
-    ],
-  },
-  familiar: {
-    rolePill: "Already Familiar",
-    titleLine1: "Welcome back to your",
-    titleLine2: "neighborhood.",
-    aiMessage: "Here are updates from your saved places and nearby services.",
-    forYouItems: [
-      { icon: "🛍️", title: "Favorite market update", subtitle: "Open late this week", tag: "Shopping", tagClass: "education" },
-      { icon: "🚌", title: "Transit advisory", subtitle: "Weekend route changes", tag: "Transit", tagClass: "community" },
-      { icon: "🏫", title: "School district notice", subtitle: "Registration opens Monday", tag: "Education", tagClass: "health" },
-    ],
-  },
-  refugee: {
-    rolePill: "Refugee",
-    titleLine1: "Welcome. We are here",
-    titleLine2: "to support you.",
-    aiMessage: "Nearby services for housing, legal support, and food are available now.",
-    forYouItems: [
-      { icon: "🏠", title: "Emergency housing desk", subtitle: "Open now · Walk-ins welcome", tag: "Housing", tagClass: "health" },
-      { icon: "⚖️", title: "Legal support clinic", subtitle: "Free consultation today", tag: "Legal", tagClass: "community" },
-      { icon: "🫶", title: "Mutual aid hub", subtitle: "Food and essentials pickup", tag: "Support", tagClass: "education" },
-    ],
-  },
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+const ALL_CATEGORIES = [
+  { id: "transit",      slug: "transit",      label: "Transit",      icon: "🚇", description: "Subway, bus, and getting around NYC" },
+  { id: "health",       slug: "health",       label: "Health",       icon: "🏥", description: "Clinics, hospitals, and health services" },
+  { id: "banking",      slug: "banking",      label: "Banking",      icon: "🏦", description: "Bank accounts, credit, and financial help" },
+  { id: "community",    slug: "community",    label: "Community",    icon: "🤝", description: "Local events, groups, and neighbors" },
+  { id: "emergency",    slug: "emergency",    label: "Emergency",    icon: "🚨", description: "Emergency services and crisis support" },
+  { id: "food",         slug: "food",         label: "Food",         icon: "🍽️", description: "Food pantries, benefits, and resources" },
+  { id: "school",       slug: "school",       label: "School",       icon: "📚", description: "Schools, enrollment, and education" },
+  { id: "housing",      slug: "housing",      label: "Housing",      icon: "🏠", description: "Shelter, rentals, and housing assistance" },
+  { id: "legal-rights", slug: "legal-rights", label: "Legal Rights", icon: "⚖️", description: "Know your rights and legal aid" },
+  { id: "work",         slug: "work",         label: "Work",         icon: "💼", description: "Jobs, permits, and employment support" },
+];
+
+const PERSONA_ORDER = {
+  visitor:   ["transit", "health", "banking", "community", "emergency"],
+  neighbor:  ["community", "transit", "food", "school", "housing", "banking", "health", "emergency"],
+  immigrant: ["health", "food", "legal-rights", "school", "housing", "work", "banking", "transit", "community", "emergency"],
+  refugee:   ["emergency", "food", "health", "legal-rights", "housing", "community", "banking", "transit", "school", "work"],
+  student:   ["housing", "banking", "work", "transit", "health", "community", "emergency"],
 };
 
-export default function HomeScreen({ userType = "neighbor", onNavigate }) {
-  const homeContent = homeContentByUserType[userType] || homeContentByUserType.neighbor;
+const PERSONA_LABELS = {
+  visitor:   "Visitor",
+  neighbor:  "New Neighbor",
+  immigrant: "Immigrant",
+  refugee:   "Refugee",
+  student:   "Student",
+};
+
+const PERSONA_GREETING = {
+  visitor:   ["Welcome to your", "visit."],
+  neighbor:  ["Welcome to your new", "neighborhood."],
+  immigrant: ["Welcome. We're here", "to help you settle."],
+  refugee:   ["Welcome. We are here", "to support you."],
+  student:   ["Welcome to your", "student life."],
+};
+
+const PERSONA_AI_MESSAGE = {
+  visitor:   "Top transit tips and must-see events are ready for this week.",
+  neighbor:  "Your local community board meeting is tomorrow at 7pm.",
+  immigrant: "Key services for housing, legal support, and work are nearby.",
+  refugee:   "Nearby services for housing, legal support, and food are available now.",
+  student:   "Housing resources and campus services for students are listed below.",
+};
+
+export default function HomeScreen({ onNavigate }) {
+  const { user } = useAuth();
+  const [categories, setCategories] = useState([]);
+  const [personaType, setPersonaType] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const persona = user.persona_type ?? "neighbor";
+    setPersonaType(persona);
+
+    async function load() {
+      let cats = [];
+      try {
+        const res = await fetch(`${BACKEND_URL}/categories?persona_type=${persona}`);
+        const data = await res.json();
+        if (res.ok) cats = data.categories ?? [];
+      } catch {
+        // backend unreachable — fall through to local fallback
+      }
+
+      const order = PERSONA_ORDER[persona] ?? [];
+      const source = cats.length > 0 ? cats : ALL_CATEGORIES.filter((c) => order.includes(c.slug));
+      const sorted = source.sort((a, b) => {
+        const ai = order.indexOf(a.slug);
+        const bi = order.indexOf(b.slug);
+        return (ai === -1 ? order.length : ai) - (bi === -1 ? order.length : bi);
+      });
+
+      setCategories(sorted);
+      setLoading(false);
+    }
+
+    load();
+  }, [user?.id, user?.persona_type]);
+
+  const persona = personaType ?? "neighbor";
+  const greeting = PERSONA_GREETING[persona] ?? ["Welcome to your", "neighborhood."];
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
-    <main className={`visitor-page visitor-page--${userType}`}>
+    <main className={`visitor-page visitor-page--${persona}`}>
       <section className="visitor-content">
         <header className="visitor-header">
-          <p className="visitor-date">SATURDAY, APRIL 25</p>
+          <p className="visitor-date">{today.toUpperCase()}</p>
           <h1 className="visitor-title">
-            {homeContent.titleLine1}
+            {greeting[0]}
             <br />
-            {homeContent.titleLine2}
+            {greeting[1]}
           </h1>
-          <span className="visitor-role-pill">● {homeContent.rolePill}</span>
+          <span className="visitor-role-pill">● {PERSONA_LABELS[persona]}</span>
         </header>
 
         <article className="visitor-ai-card">
           <p className="visitor-ai-label">AI ASSISTANT</p>
-          <p className="visitor-ai-message">{homeContent.aiMessage}</p>
-          <button type="button" className="visitor-learn-more">
+          <p className="visitor-ai-message">{PERSONA_AI_MESSAGE[persona]}</p>
+          <button type="button" className="visitor-learn-more" onClick={() => onNavigate?.("ask")}>
             Learn more
           </button>
         </article>
 
         <section className="visitor-for-you">
           <h2 className="visitor-section-title">FOR YOU</h2>
-          <div className="visitor-list">
-            {homeContent.forYouItems.map((item) => (
-              <article key={item.title} className="visitor-item-card">
-                <span className="visitor-item-icon-wrap" aria-hidden>
-                  <span className="visitor-item-icon">{item.icon}</span>
-                </span>
-                <div className="visitor-item-copy">
-                  <p className="visitor-item-title">{item.title}</p>
-                  <p className="visitor-item-subtitle">{item.subtitle}</p>
-                  <span className={`visitor-item-tag ${item.tagClass}`}>{item.tag}</span>
-                </div>
-                <span className="visitor-bookmark" aria-hidden>
-                  ♡
-                </span>
-              </article>
-            ))}
-          </div>
+
+          {loading ? (
+            <p style={{ color: "var(--persona-accent)" }}>Loading…</p>
+          ) : categories.length === 0 ? (
+            <p style={{ color: "#7d7672" }}>No resources found.</p>
+          ) : (
+            <div className="visitor-list">
+              {categories.map((cat) => (
+                <article key={cat.id} className="visitor-item-card">
+                  <span className="visitor-item-icon-wrap" aria-hidden>
+                    <span className="visitor-item-icon">{cat.icon}</span>
+                  </span>
+                  <div className="visitor-item-copy">
+                    <p className="visitor-item-title">{cat.label ?? cat.name}</p>
+                    {cat.description && (
+                      <p className="visitor-item-subtitle">{cat.description}</p>
+                    )}
+                  </div>
+                  <span className="visitor-bookmark" aria-hidden>♡</span>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </section>
 
@@ -102,12 +153,7 @@ export default function HomeScreen({ userType = "neighbor", onNavigate }) {
           <span className="visitor-nav-label">Home</span>
         </div>
         <div className="visitor-nav-item">
-          <button
-            type="button"
-            className="visitor-nav-icon-button"
-            aria-label="Map"
-            onClick={() => onNavigate?.("map")}
-          >
+          <button type="button" className="visitor-nav-icon-button" aria-label="Map" onClick={() => onNavigate?.("map")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M12 21s6-5.5 6-11a6 6 0 1 0-12 0c0 5.5 6 11 6 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
