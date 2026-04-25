@@ -1,4 +1,4 @@
-export default function UserTypeSelect({ userTypes, selectedUserType, onSelectUserType }) {
+export default function UserTypeSelect({ userTypes, selectedUserType, onSelectUserType, onContinue, isSubmitting }) {
   return (
     <main className="page user-type-page">
       <section className="user-type-content">
@@ -32,6 +32,15 @@ export default function UserTypeSelect({ userTypes, selectedUserType, onSelectUs
             );
           })}
         </section>
+
+        <button
+          type="button"
+          className="auth-submit-button"
+          onClick={onContinue}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : "Continue"}
+        </button>
       </section>
     </main>
   );
