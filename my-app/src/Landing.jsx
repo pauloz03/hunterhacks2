@@ -14,6 +14,8 @@ const languages = [
 export default function Landing() {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [showLanguageSelect, setShowLanguageSelect] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
 
   if (!showLanguageSelect) {
     return (
@@ -89,6 +91,63 @@ export default function Landing() {
     );
   }
 
+  if (showAuth) {
+    return (
+      <main className="page auth-page">
+        <section className="content auth-content">
+          <button type="button" className="auth-back-button" onClick={() => setShowAuth(false)}>
+            ← Back to language selection
+          </button>
+
+          <header className="auth-header">
+            <span className="auth-eyebrow">Language selected: {selectedLanguage}</span>
+            <h1 className="auth-title">{authMode === "login" ? "Welcome back" : "Create your account"}</h1>
+            <p className="auth-subtitle">
+              {authMode === "login"
+                ? "Log in to continue with personalized guidance."
+                : "Sign up to save your progress and language preferences."}
+            </p>
+          </header>
+
+          <div className="auth-mode-toggle" role="tablist" aria-label="Authentication mode">
+            <button
+              type="button"
+              className={`auth-toggle-button ${authMode === "login" ? "active" : ""}`}
+              onClick={() => setAuthMode("login")}
+              aria-pressed={authMode === "login"}
+            >
+              Log in
+            </button>
+            <button
+              type="button"
+              className={`auth-toggle-button ${authMode === "signup" ? "active" : ""}`}
+              onClick={() => setAuthMode("signup")}
+              aria-pressed={authMode === "signup"}
+            >
+              Sign up
+            </button>
+          </div>
+
+          <form className="auth-form" onSubmit={(event) => event.preventDefault()}>
+            <label className="auth-label" htmlFor="email-input">
+              Email
+            </label>
+            <input className="auth-input" id="email-input" type="email" placeholder="you@example.com" required />
+
+            <label className="auth-label" htmlFor="password-input">
+              Password
+            </label>
+            <input className="auth-input" id="password-input" type="password" placeholder="••••••••" required />
+
+            <button type="submit" className="auth-submit-button">
+              {authMode === "login" ? "Log in" : "Create account"}
+            </button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="page language-page">
       <section className="content language-content">
@@ -128,7 +187,7 @@ export default function Landing() {
         </section>
 
         <footer className="footer">
-          <button type="button" className="continue-button">
+          <button type="button" className="continue-button" onClick={() => setShowAuth(true)}>
             Continue <span aria-hidden>→</span>
           </button>
         </footer>
