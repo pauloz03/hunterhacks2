@@ -1,9 +1,6 @@
-type LanguageOption = {
-  nativeName: string;
-  englishName: string;
-};
+import { useState } from "react";
 
-const languages: LanguageOption[] = [
+const languages = [
   { nativeName: "English", englishName: "English" },
   { nativeName: "Español", englishName: "Spanish" },
   { nativeName: "中文", englishName: "Chinese" },
@@ -11,10 +8,12 @@ const languages: LanguageOption[] = [
   { nativeName: "Français", englishName: "French" },
   { nativeName: "বাংলা", englishName: "Bengali" },
   { nativeName: "Русский", englishName: "Russian" },
-  { nativeName: "Kreyòl", englishName: "Haitian Creole" },
+  { nativeName: "Other", englishName: "Select language" },
 ];
 
-export default function App() {
+export default function Landing() {
+  const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
+
   return (
     <main className="page">
       <section className="content">
@@ -36,14 +35,15 @@ export default function App() {
         </header>
 
         <section className="language-grid" aria-label="Language selection">
-          {languages.map((language, index) => {
-            const isActive = index === 0;
+          {languages.map((language) => {
+            const isActive = selectedLanguage === language.nativeName;
             return (
               <button
                 key={language.nativeName}
                 type="button"
                 className={`language-card ${isActive ? "active" : ""}`}
                 aria-pressed={isActive}
+                onClick={() => setSelectedLanguage(language.nativeName)}
               >
                 <span className="native-name">{language.nativeName}</span>
                 <span className="english-name">{language.englishName}</span>
