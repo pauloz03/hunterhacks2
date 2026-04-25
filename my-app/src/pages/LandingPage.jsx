@@ -4,6 +4,7 @@ import AuthScreen from "../screens/AuthScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
 import UserTypeSelect from "../screens/UserTypeSelect";
+import { useSupabase } from "../hooks/useSupabase";
 
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
@@ -25,10 +26,15 @@ const userTypes = [
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
+  const supabase = useSupabase();
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [selectedUserType, setSelectedUserType] = useState("newcomer");
   const [authMode, setAuthMode] = useState("login");
   const [currentScreen, setCurrentScreen] = useState("intro");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authMessage, setAuthMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const localizedLanguages = languages.map((language) => ({
     ...language,
@@ -46,10 +52,56 @@ export default function LandingPage() {
         authMode={authMode}
         onSetAuthMode={setAuthMode}
         onBack={() => setCurrentScreen("language")}
-        onSubmit={(event) => {
+        email={email}
+        password={password}
+        onEmailChange={setEmail}
+        onPasswordChange={setPassword}
+        isSubmitting={isSubmitting}
+        message={authMessage}
+        onSubmit={async (event) => {
           event.preventDefault();
-          if (authMode === "signup") {
-            setCurrentScreen("userType");
+          setAuthMessage("");
+
+          if (!email.trim() || !password.trim()) {
+            setAuthMessage("Email and password are required.");
+            return;
+          }
+
+          setIsSubmitting(true);
+
+          try {
+            if (authMode === "login") {
+              const { error } = await supabase.auth.signInWithPassword({
+                email: email.trim(),
+                password,
+              });
+              if (error) throw error;
+              setAuthMessage("Logged in successfully.");
+            } else {
+              const { data, error } = await supabase.auth.signUp({
+                email: email.trim(),
+                password,
+              });
+              if (error) throw error;
+
+              if (data?.user?.id) {
+                const { error: usersInsertError } = await supabase.from("users").upsert(
+                  {
+                    id: data.user.id,
+                    email: data.user.email,
+                  },
+                  { onConflict: "id" },
+                );
+
+                if (usersInsertError) throw usersInsertError;
+              }
+
+              setAuthMessage("Account created. Check your email for confirmation if required.");
+            }
+          } catch (error) {
+            setAuthMessage(error?.message || "Authentication failed.");
+          } finally {
+            setIsSubmitting(false);
           }
         }}
       />
