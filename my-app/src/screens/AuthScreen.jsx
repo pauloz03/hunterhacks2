@@ -4,6 +4,12 @@ export default function AuthScreen({
   onSetAuthMode,
   onBack,
   onSubmit,
+  email,
+  password,
+  onEmailChange,
+  onPasswordChange,
+  isSubmitting,
+  message,
 }) {
   return (
     <main className="page auth-page">
@@ -45,16 +51,35 @@ export default function AuthScreen({
           <label className="auth-label" htmlFor="email-input">
             Email
           </label>
-          <input className="auth-input" id="email-input" type="email" placeholder="you@example.com" required />
+          <input
+            className="auth-input"
+            id="email-input"
+            type="email"
+            placeholder="you@example.com"
+            required
+            value={email}
+            onChange={(event) => onEmailChange(event.target.value)}
+            autoComplete="email"
+          />
 
           <label className="auth-label" htmlFor="password-input">
             Password
           </label>
-          <input className="auth-input" id="password-input" type="password" placeholder="••••••••" required />
+          <input
+            className="auth-input"
+            id="password-input"
+            type="password"
+            placeholder="••••••••"
+            required
+            value={password}
+            onChange={(event) => onPasswordChange(event.target.value)}
+            autoComplete={authMode === "login" ? "current-password" : "new-password"}
+          />
 
-          <button type="submit" className="auth-submit-button">
+          <button type="submit" className="auth-submit-button" disabled={isSubmitting}>
             {authMode === "login" ? "Log in" : "Create account"}
           </button>
+          {message ? <p className="auth-message">{message}</p> : null}
         </form>
       </section>
     </main>
