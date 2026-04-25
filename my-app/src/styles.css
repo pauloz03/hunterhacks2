@@ -573,6 +573,10 @@ body {
 }
 
 .visitor-page {
+  --persona-accent: #4ca168;
+  --persona-pill-bg: #b8dcc0;
+  --persona-pill-text: #2d6a49;
+  --persona-soft-bg: #cae8ce;
   min-height: 100dvh;
   background: #e8f1e7;
   color: #1f2a29;
@@ -615,8 +619,8 @@ body {
   margin-top: 4px;
   border-radius: 999px;
   padding: 7px 12px;
-  background: #b8dcc0;
-  color: #2d6a49;
+  background: var(--persona-pill-bg);
+  color: var(--persona-pill-text);
   font-size: clamp(14px, 2.8vw, 20px);
   font-weight: 700;
 }
@@ -631,7 +635,7 @@ body {
 
 .visitor-ai-label {
   margin: 0;
-  color: #4d9a69;
+  color: var(--persona-accent);
   font-size: clamp(12px, 2.3vw, 17px);
   letter-spacing: 1.2px;
   font-weight: 800;
@@ -648,7 +652,7 @@ body {
   margin-top: 16px;
   border: 0;
   border-radius: 999px;
-  background: #4ca168;
+  background: var(--persona-accent);
   color: #f3f7f4;
   font-size: clamp(13px, 2.5vw, 17px);
   font-weight: 700;
@@ -728,8 +732,8 @@ body {
 }
 
 .visitor-item-tag.health {
-  background: #cae8ce;
-  color: #2e7b4a;
+  background: var(--persona-soft-bg);
+  color: var(--persona-pill-text);
 }
 
 .visitor-item-tag.education {
@@ -775,7 +779,35 @@ body {
 }
 
 .visitor-nav-item.active {
-  color: #57a36f;
+  color: var(--persona-accent);
+}
+
+.visitor-page--visitor {
+  --persona-accent: #009e95;
+  --persona-pill-bg: #b5e8e4;
+  --persona-pill-text: #007e77;
+  --persona-soft-bg: #c9f0ed;
+}
+
+.visitor-page--neighbor {
+  --persona-accent: #4ca168;
+  --persona-pill-bg: #b8dcc0;
+  --persona-pill-text: #2d6a49;
+  --persona-soft-bg: #cae8ce;
+}
+
+.visitor-page--refugee {
+  --persona-accent: #2d5f8a;
+  --persona-pill-bg: #c9d8e6;
+  --persona-pill-text: #2d5f8a;
+  --persona-soft-bg: #d9e6f2;
+}
+
+.visitor-page--familiar {
+  --persona-accent: #5b4fcf;
+  --persona-pill-bg: #dcd7f9;
+  --persona-pill-text: #4b3fbc;
+  --persona-soft-bg: #e5e1fb;
 }
 
 .visitor-nav-item span:first-child {

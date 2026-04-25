@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import AuthScreen from "../screens/AuthScreen";
+import HomeScreen from "../screens/HomeScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
-import NewNeighborHomescreen from "../screens/NewNeighborHomescreen";
 import UserTypeSelect from "../screens/UserTypeSelect";
-import Dashboard from "../screens/Dashboard";
 import ProtectedScreen from "../components/ProtectedScreen";
 import { useAuth } from "../context/AuthContext";
 
@@ -96,7 +95,9 @@ export default function LandingPage() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Authentication failed.");
             if (data.user) login(data.user);
-            if (authMode === "signup" && data.user) {
+            if (authMode === "login" && data.user) {
+              setCurrentScreen("home");
+            } else if (authMode === "signup" && data.user) {
               setCurrentScreen("userType");
             } else {
               setAuthMessage(data.message);
@@ -108,14 +109,6 @@ export default function LandingPage() {
           }
         }}
       />
-    );
-  }
-
-  if (currentScreen === "dashboard") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <Dashboard />
-      </ProtectedScreen>
     );
   }
 
@@ -142,7 +135,7 @@ export default function LandingPage() {
               });
               const data = await res.json();
               if (!res.ok) throw new Error(data.error || "Failed to save profile.");
-              setCurrentScreen(selectedUserType === "neighbor" ? "newNeighborHome" : "dashboard");
+              setCurrentScreen("home");
             } catch (err) {
               console.error(err);
             } finally {
@@ -154,8 +147,12 @@ export default function LandingPage() {
     );
   }
 
-  if (currentScreen === "newNeighborHome") {
-    return <NewNeighborHomescreen />;
+  if (currentScreen === "home") {
+    return (
+      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
+        <HomeScreen userType={selectedUserType} />
+      </ProtectedScreen>
+    );
   }
 
   return (
