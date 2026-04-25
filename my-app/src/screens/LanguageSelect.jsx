@@ -1,4 +1,13 @@
-export default function LanguageSelect({ languages, selectedLanguage, onSelectLanguage, onContinue }) {
+export default function LanguageSelect({
+  languages,
+  selectedLanguage,
+  titleLine1,
+  titleLine2,
+  subtitle,
+  continueLabel,
+  onSelectLanguage,
+  onContinue,
+}) {
   return (
     <main className="page language-page">
       <section className="content language-content">
@@ -11,12 +20,12 @@ export default function LanguageSelect({ languages, selectedLanguage, onSelectLa
           </div>
 
           <h1 className="title">
-            Welcome to
+            {titleLine1}
             <br />
-            New York City.
+            {titleLine2}
           </h1>
 
-          <p className="subtitle">Choose your language to get started.</p>
+          <p className="subtitle">{subtitle}</p>
         </header>
 
         <section className="language-grid" aria-label="Language selection">
@@ -39,7 +48,7 @@ export default function LanguageSelect({ languages, selectedLanguage, onSelectLa
 
         <footer className="footer">
           <button type="button" className="continue-button" onClick={onContinue}>
-            Continue <span aria-hidden>→</span>
+            {continueLabel} <span aria-hidden>→</span>
           </button>
         </footer>
       </section>
