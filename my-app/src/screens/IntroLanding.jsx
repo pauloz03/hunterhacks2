@@ -1,4 +1,4 @@
-export default function IntroLanding({ languages, onGetStarted }) {
+export default function IntroLanding({ languages, copy, onGetStarted }) {
   return (
     <main className="page intro-page">
       <section className="intro-content">
@@ -48,10 +48,10 @@ export default function IntroLanding({ languages, onGetStarted }) {
           <span aria-hidden className="intro-logo-mark">
             <span className="intro-logo-dot" />
           </span>
-          <h1 className="intro-title">LANDED</h1>
-          <p className="intro-subtitle">Your guide to</p>
+          <h1 className="intro-title">{copy.brandTitle}</h1>
+          <p className="intro-subtitle">{copy.guidePrefix}</p>
           <p className="intro-subtitle intro-subtitle-strong">
-            <span>New York City,</span> in your language.
+            <span>{copy.cityPhrase}</span> {copy.languagePhrase}
           </p>
 
           <div className="intro-language-pills" aria-label="Supported languages">
@@ -63,7 +63,7 @@ export default function IntroLanding({ languages, onGetStarted }) {
           </div>
 
           <button type="button" className="get-started-button" onClick={onGetStarted}>
-            Get started <span aria-hidden>→</span>
+            {copy.getStarted} <span aria-hidden>→</span>
           </button>
         </section>
       </section>
