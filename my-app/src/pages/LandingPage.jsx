@@ -13,11 +13,11 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
   { nativeName: "Español", key: "spanish", code: "es" },
-  { nativeName: "中文", key: "chinese", code: "en" },
-  { nativeName: "العربية", key: "arabic", code: "en" },
-  { nativeName: "Français", key: "french", code: "en" },
-  { nativeName: "বাংলা", key: "bengali", code: "en" },
-  { nativeName: "Русский", key: "russian", code: "en" },
+  { nativeName: "中文", key: "chinese", code: "zh" },
+  { nativeName: "العربية", key: "arabic", code: "ar" },
+  { nativeName: "Français", key: "french", code: "fr" },
+  { nativeName: "বাংলা", key: "bengali", code: "bn" },
+  { nativeName: "Русский", key: "russian", code: "ru" },
   { nativeName: "Other", key: "other", code: "en" },
 ];
 

@@ -1,7 +1,7 @@
 .env
 .env.local
 .env*.local
-
+.gitignore
 node_modules/
 my-app/dist/
 my-app/.vite/
