@@ -5,6 +5,13 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   en: {
     translation: {
+      intro: {
+        brandTitle: "LANDED",
+        guidePrefix: "Your guide to",
+        cityPhrase: "New York City,",
+        languagePhrase: "in your language.",
+        getStarted: "Get started",
+      },
       landing: {
         titleLine1: "Welcome to",
         titleLine2: "New York City.",
@@ -25,6 +32,13 @@ const resources = {
   },
   es: {
     translation: {
+      intro: {
+        brandTitle: "LANDED",
+        guidePrefix: "Tu guia para",
+        cityPhrase: "la ciudad de Nueva York,",
+        languagePhrase: "en tu idioma.",
+        getStarted: "Comenzar",
+      },
       landing: {
         titleLine1: "Bienvenido a",
         titleLine2: "la ciudad de Nueva York.",

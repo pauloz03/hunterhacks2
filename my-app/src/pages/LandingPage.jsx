@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import AuthScreen from "../screens/AuthScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
+import NewNeighborHomescreen from "../screens/NewNeighborHomescreen";
 import UserTypeSelect from "../screens/UserTypeSelect";
 
-const BACKEND_URL = "";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000";
 
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
@@ -21,14 +22,14 @@ const languages = [
 const userTypes = [
   { id: "visitor", icon: "✈️", title: "Visitor", subtitle: "1-7 days" },
   { id: "neighbor", icon: "🏘️", title: "New Neighbor", subtitle: "Moved within NYC" },
-  { id: "newcomer", icon: "🌍", title: "Newcomer", subtitle: "From another country" },
+  { id: "familiar", icon: "🧭", title: "Already Familiar", subtitle: "Know the neighborhood" },
   { id: "refugee", icon: "🕊️", title: "Refugee", subtitle: "Seeking safety" },
 ];
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
-  const [selectedUserType, setSelectedUserType] = useState("newcomer");
+  const [selectedUserType, setSelectedUserType] = useState("neighbor");
   const [authMode, setAuthMode] = useState("login");
   const [currentScreen, setCurrentScreen] = useState("intro");
   const [email, setEmail] = useState("");
@@ -42,7 +43,19 @@ export default function LandingPage() {
   }));
 
   if (currentScreen === "intro") {
-    return <IntroLanding languages={localizedLanguages} onGetStarted={() => setCurrentScreen("language")} />;
+    return (
+      <IntroLanding
+        languages={localizedLanguages}
+        copy={{
+          brandTitle: t("intro.brandTitle"),
+          guidePrefix: t("intro.guidePrefix"),
+          cityPhrase: t("intro.cityPhrase"),
+          languagePhrase: t("intro.languagePhrase"),
+          getStarted: t("intro.getStarted"),
+        }}
+        onGetStarted={() => setCurrentScreen("language")}
+      />
+    );
   }
 
   if (currentScreen === "auth") {
@@ -94,15 +107,28 @@ export default function LandingPage() {
       <UserTypeSelect
         userTypes={userTypes}
         selectedUserType={selectedUserType}
-        onSelectUserType={setSelectedUserType}
+        onSelectUserType={(userTypeId) => {
+          setSelectedUserType(userTypeId);
+          if (userTypeId === "neighbor") {
+            setCurrentScreen("newNeighborHome");
+          }
+        }}
       />
     );
+  }
+
+  if (currentScreen === "newNeighborHome") {
+    return <NewNeighborHomescreen />;
   }
 
   return (
     <LanguageSelect
       languages={localizedLanguages}
       selectedLanguage={selectedLanguage}
+      titleLine1={t("landing.titleLine1")}
+      titleLine2={t("landing.titleLine2")}
+      subtitle={t("landing.subtitle")}
+      continueLabel={t("landing.continue")}
       onSelectLanguage={(nativeName) => {
         const selected = languages.find((language) => language.nativeName === nativeName);
         setSelectedLanguage(nativeName);
