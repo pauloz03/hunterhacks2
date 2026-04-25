@@ -1,6 +1,11 @@
-export default function AskScreen({ userType = "neighbor", onNavigate }) {
+import { useAuth } from "../context/AuthContext";
+
+export default function AskScreen({ onNavigate }) {
+  const { user } = useAuth();
+  const persona = user?.persona_type ?? "neighbor";
+
   return (
-    <main className={`visitor-page visitor-page--${userType}`}>
+    <main className={`visitor-page visitor-page--${persona}`}>
       <section className="ask-content">
         <header className="ask-header">
           <h1 className="ask-title">Ask assistant</h1>

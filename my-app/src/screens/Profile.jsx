@@ -1,15 +1,40 @@
-export default function ProfileScreen({ userType = "neighbor", onNavigate }) {
-  const profileByUserType = {
-    visitor: { role: "Visitor", note: "Short stay profile with quick trip preferences." },
-    neighbor: { role: "New Neighbor", note: "Local setup for your new neighborhood essentials." },
-    familiar: { role: "Already Familiar", note: "Keep your saved places and routine updates here." },
-    refugee: { role: "Refugee", note: "Support-focused profile with trusted resources." },
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+export default function ProfileScreen({ onNavigate }) {
+  const { user, logout } = useAuth();
+  const persona = user?.persona_type ?? "neighbor";
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await fetch(`${BACKEND_URL}/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user?.id }),
+      });
+    } catch {
+      // proceed with local logout even if backend is unreachable
+    }
+    logout();
+  }
+
+  const profileByPersona = {
+    visitor:   { role: "Visitor",          note: "Short stay profile with quick trip preferences." },
+    neighbor:  { role: "New Neighbor",     note: "Local setup for your new neighborhood essentials." },
+    immigrant: { role: "Immigrant",        note: "Resources tailored to settling into NYC life." },
+    refugee:   { role: "Refugee",          note: "Support-focused profile with trusted resources." },
+    student:   { role: "Student",          note: "Campus and city resources for student life." },
+    familiar:  { role: "Already Familiar", note: "Keep your saved places and routine updates here." },
   };
 
-  const profile = profileByUserType[userType] || profileByUserType.neighbor;
+  const profile = profileByPersona[persona] || profileByPersona.neighbor;
 
   return (
-    <main className={`visitor-page visitor-page--${userType}`}>
+    <main className={`visitor-page visitor-page--${persona}`}>
       <section className="profile-content">
         <h1 className="profile-title">Profile</h1>
         <p className="profile-subtitle">Temporary page while profile features are being built.</p>
@@ -34,6 +59,14 @@ export default function ProfileScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <button type="button" className="profile-list-item">
             Notification settings
+          </button>
+          <button
+            type="button"
+            className="profile-list-item profile-list-item--logout"
+            onClick={handleLogout}
+            disabled={loggingOut}
+          >
+            {loggingOut ? "Signing out…" : "Sign out"}
           </button>
         </section>
       </section>

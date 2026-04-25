@@ -163,7 +163,7 @@ export default function LandingPage() {
   if (currentScreen === "map") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <MapScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+        <MapScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
@@ -171,7 +171,7 @@ export default function LandingPage() {
   if (currentScreen === "ask") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <AskScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+        <AskScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
@@ -179,7 +179,7 @@ export default function LandingPage() {
   if (currentScreen === "profile") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <ProfileScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+        <ProfileScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
@@ -187,7 +187,7 @@ export default function LandingPage() {
   if (currentScreen === "saved") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <SavedScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+        <SavedScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
