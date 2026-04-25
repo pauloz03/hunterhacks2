@@ -9,7 +9,7 @@ import Dashboard from "../screens/Dashboard";
 import ProtectedScreen from "../components/ProtectedScreen";
 import { useAuth } from "../context/AuthContext";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
