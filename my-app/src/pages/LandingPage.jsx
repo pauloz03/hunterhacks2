@@ -6,7 +6,7 @@ import LanguageSelect from "../screens/LanguageSelect";
 import NewNeighborHomescreen from "../screens/NewNeighborHomescreen";
 import UserTypeSelect from "../screens/UserTypeSelect";
 
-const BACKEND_URL = "";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000";
 
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
