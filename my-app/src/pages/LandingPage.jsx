@@ -4,6 +4,7 @@ import AuthScreen from "../screens/AuthScreen";
 import HomeScreen from "../screens/HomeScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
+import MapScreen from "../screens/Map";
 import UserTypeSelect from "../screens/UserTypeSelect";
 import ProtectedScreen from "../components/ProtectedScreen";
 import { useAuth } from "../context/AuthContext";
@@ -150,7 +151,15 @@ export default function LandingPage() {
   if (currentScreen === "home") {
     return (
       <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <HomeScreen userType={selectedUserType} />
+        <HomeScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
+      </ProtectedScreen>
+    );
+  }
+
+  if (currentScreen === "map") {
+    return (
+      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
+        <MapScreen userType={selectedUserType} onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
