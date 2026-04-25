@@ -29,10 +29,10 @@ body {
 .page {
   min-height: 100dvh;
   display: flex;
-  padding: clamp(20px, 3vw, 36px);
+  padding: clamp(16px, 2.4vw, 28px);
   background:
-    radial-gradient(125% 130% at 60% 100%, rgba(11, 50, 95, 0.55) 0%, rgba(6, 22, 44, 0.22) 52%, rgba(4, 10, 20, 0) 100%),
-    linear-gradient(180deg, #090d14 0%, #040b14 100%);
+    radial-gradient(110% 130% at 50% 115%, rgba(163, 206, 216, 0.54) 0%, rgba(162, 188, 211, 0.16) 47%, rgba(255, 255, 255, 0) 100%),
+    linear-gradient(180deg, #f5f4fa 0%, #e9edf7 68%, #dce4ed 100%);
 }
 
 .content {
@@ -43,6 +43,184 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.intro-content {
+  position: relative;
+  width: min(100%, 620px);
+  min-height: calc(100dvh - clamp(34px, 5.5vw, 56px));
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 36px;
+  padding: clamp(20px, 3vw, 34px) clamp(18px, 2.8vw, 32px) 30px;
+}
+
+.dynamic-island {
+  display: block;
+  width: 126px;
+  height: 38px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: #061a30;
+}
+
+.intro-center {
+  width: min(100%, 380px);
+  margin: clamp(132px, 20vh, 210px) auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.intro-logo-mark {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #cf5639;
+  display: grid;
+  place-items: center;
+}
+
+.intro-logo-dot {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #f3f2f3;
+}
+
+.intro-title {
+  margin: 18px 0 0;
+  color: #121c2c;
+  font-size: clamp(44px, 7vw, 58px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.intro-subtitle {
+  margin: 0;
+  color: #4b4548;
+  font-size: clamp(28px, 4.5vw, 40px);
+  line-height: 1.12;
+  text-align: center;
+}
+
+.intro-subtitle-strong {
+  margin-top: -2px;
+}
+
+.intro-subtitle-strong span {
+  color: #c95336;
+  font-weight: 600;
+}
+
+.intro-language-pills {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pill {
+  border-radius: 999px;
+  background: rgba(246, 246, 247, 0.96);
+  border: 1px solid rgba(224, 224, 230, 0.9);
+  color: #5d575a;
+  font-size: clamp(22px, 3.2vw, 28px);
+  line-height: 1;
+  padding: 9px 14px;
+}
+
+.get-started-button {
+  margin-top: 26px;
+  width: min(100%, 100%);
+  border: 0;
+  border-radius: 21px;
+  background: #cc5437;
+  color: #faf8f8;
+  padding: 16px 24px;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.intro-footnote {
+  margin: 18px 0 0;
+  color: #b4a7a4;
+  font-size: 30px;
+}
+
+.floating-card {
+  position: absolute;
+  width: 100px;
+  height: 118px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 18px rgba(24, 31, 49, 0.07);
+  z-index: 1;
+}
+
+.floating-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.floating-label {
+  color: #6d6971;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.card-transit {
+  top: 114px;
+  left: 22px;
+  background: #f3cf6d;
+  transform: rotate(-6deg);
+}
+
+.card-health {
+  top: 108px;
+  right: 20px;
+  background: #b9dfe0;
+  transform: rotate(4deg);
+}
+
+.card-legal {
+  top: 338px;
+  left: 8px;
+  background: #c7c2eb;
+  transform: rotate(-2deg);
+}
+
+.card-food {
+  top: 338px;
+  right: 10px;
+  background: #c0ddc8;
+  transform: rotate(6deg);
+}
+
+.card-housing {
+  top: 574px;
+  left: 12px;
+  background: #aec5dc;
+  transform: rotate(3deg);
+}
+
+.card-education {
+  top: 554px;
+  right: 12px;
+  background: #e8cbc8;
+  transform: rotate(-4deg);
 }
 
 .hero {
@@ -158,6 +336,16 @@ body {
   cursor: pointer;
 }
 
+.language-page {
+  background:
+    radial-gradient(125% 130% at 60% 100%, rgba(11, 50, 95, 0.55) 0%, rgba(6, 22, 44, 0.22) 52%, rgba(4, 10, 20, 0) 100%),
+    linear-gradient(180deg, #090d14 0%, #040b14 100%);
+}
+
+.language-content {
+  width: min(100%, 560px);
+}
+
 @media (max-width: 900px) {
   .content {
     width: 100%;
@@ -167,11 +355,54 @@ body {
 
 @media (max-width: 620px) {
   .page {
-    padding: 16px;
+    padding: 0;
   }
 
   .content {
-    padding: 16px 10px 22px;
+    padding: 14px 12px 20px;
     min-height: calc(100dvh - 32px);
+  }
+
+  .intro-content {
+    border-radius: 0;
+    min-height: 100dvh;
+  }
+
+  .intro-center {
+    width: min(100%, 320px);
+    margin-top: clamp(112px, 22vh, 166px);
+  }
+
+  .intro-title {
+    font-size: clamp(44px, 12vw, 54px);
+  }
+
+  .intro-subtitle {
+    font-size: clamp(28px, 7.2vw, 42px);
+  }
+
+  .pill {
+    font-size: clamp(22px, 5vw, 30px);
+  }
+
+  .get-started-button {
+    font-size: clamp(30px, 7.6vw, 45px);
+  }
+
+  .intro-footnote {
+    font-size: clamp(20px, 5.2vw, 30px);
+  }
+
+  .floating-card {
+    width: 84px;
+    height: 100px;
+  }
+
+  .floating-icon {
+    font-size: 24px;
+  }
+
+  .floating-label {
+    font-size: 15px;
   }
 }
