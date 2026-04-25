@@ -577,8 +577,12 @@ body {
   --persona-pill-bg: #b8dcc0;
   --persona-pill-text: #2d6a49;
   --persona-soft-bg: #cae8ce;
+  --persona-bg: #e8f1e7;
+  --persona-date: #406451;
+  --persona-title: #132825;
+  --persona-border: #c6decb;
   min-height: 100dvh;
-  background: #e8f1e7;
+  background: var(--persona-bg);
   color: #1f2a29;
   padding-bottom: 92px;
 }
@@ -597,7 +601,7 @@ body {
 
 .visitor-date {
   margin: 0;
-  color: #406451;
+  color: var(--persona-date);
   letter-spacing: 1px;
   font-size: clamp(12px, 2.4vw, 18px);
   font-weight: 700;
@@ -605,7 +609,7 @@ body {
 
 .visitor-title {
   margin: 0;
-  color: #132825;
+  color: var(--persona-title);
   font-size: clamp(32px, 6.2vw, 46px);
   line-height: 1.03;
   letter-spacing: -0.8px;
@@ -627,7 +631,7 @@ body {
 
 .visitor-ai-card {
   margin-top: 28px;
-  border: 2px solid #c6decb;
+  border: 2px solid var(--persona-border);
   border-radius: 24px;
   background: #f9f9f8;
   padding: 16px 18px 18px;
@@ -1181,6 +1185,18 @@ body {
   padding: 12px 14px;
   font-size: clamp(14px, 2.6vw, 18px);
   font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-list-item--logout {
+  border-color: #f5c6c6;
+  background: #fff5f5;
+  color: #c0392b;
+}
+
+.profile-list-item--logout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .saved-content {
@@ -1265,32 +1281,76 @@ body {
   font-size: 20px;
 }
 
+/* Visitor — teal, fun, exploratory */
 .visitor-page--visitor {
   --persona-accent: #009e95;
   --persona-pill-bg: #b5e8e4;
   --persona-pill-text: #007e77;
   --persona-soft-bg: #c9f0ed;
+  --persona-bg: #e4f5f4;
+  --persona-date: #007e77;
+  --persona-title: #092e2b;
+  --persona-border: #a8deda;
 }
 
+/* Neighbor — warm green, community feel */
 .visitor-page--neighbor {
   --persona-accent: #4ca168;
   --persona-pill-bg: #b8dcc0;
   --persona-pill-text: #2d6a49;
   --persona-soft-bg: #cae8ce;
+  --persona-bg: #e8f1e7;
+  --persona-date: #406451;
+  --persona-title: #132825;
+  --persona-border: #c6decb;
 }
 
+/* Immigrant — calm blue, trustworthy */
+.visitor-page--immigrant {
+  --persona-accent: #2563a8;
+  --persona-pill-bg: #c5d8f0;
+  --persona-pill-text: #1a4d8a;
+  --persona-soft-bg: #d8e8f8;
+  --persona-bg: #e8eef6;
+  --persona-date: #1e4f8a;
+  --persona-title: #0d1f3c;
+  --persona-border: #b5cce8;
+}
+
+/* Refugee — muted blue, safe and sensitive */
 .visitor-page--refugee {
   --persona-accent: #2d5f8a;
   --persona-pill-bg: #c9d8e6;
-  --persona-pill-text: #2d5f8a;
+  --persona-pill-text: #1e4568;
   --persona-soft-bg: #d9e6f2;
+  --persona-bg: #eaeff5;
+  --persona-date: #2d5f8a;
+  --persona-title: #0e1e30;
+  --persona-border: #b5cce0;
 }
 
+/* Student — amber, energetic and practical */
+.visitor-page--student {
+  --persona-accent: #c07a2a;
+  --persona-pill-bg: #f0ddb8;
+  --persona-pill-text: #7d4e10;
+  --persona-soft-bg: #f5e8ce;
+  --persona-bg: #f5ede0;
+  --persona-date: #8a5218;
+  --persona-title: #2e1a0a;
+  --persona-border: #e8d0a0;
+}
+
+/* Familiar — purple */
 .visitor-page--familiar {
   --persona-accent: #5b4fcf;
   --persona-pill-bg: #dcd7f9;
   --persona-pill-text: #4b3fbc;
   --persona-soft-bg: #e5e1fb;
+  --persona-bg: #eeedfb;
+  --persona-date: #4b3fbc;
+  --persona-title: #1a1642;
+  --persona-border: #ccc8f5;
 }
 
 @media (max-width: 900px) {

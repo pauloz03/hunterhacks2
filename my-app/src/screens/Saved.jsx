@@ -17,11 +17,15 @@ const savedItemsByUserType = {
   ],
 };
 
-export default function SavedScreen({ userType = "neighbor", onNavigate }) {
-  const savedItems = savedItemsByUserType[userType] || savedItemsByUserType.neighbor;
+import { useAuth } from "../context/AuthContext";
+
+export default function SavedScreen({ onNavigate }) {
+  const { user } = useAuth();
+  const persona = user?.persona_type ?? "neighbor";
+  const savedItems = savedItemsByUserType[persona] || savedItemsByUserType.neighbor;
 
   return (
-    <main className={`visitor-page visitor-page--${userType}`}>
+    <main className={`visitor-page visitor-page--${persona}`}>
       <section className="saved-content">
         <h1 className="saved-title">Saved resources</h1>
         <p className="saved-subtitle">Temporary page for map bookmarks while backend save is being built.</p>

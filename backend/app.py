@@ -118,6 +118,20 @@ def update_profile():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/auth/logout", methods=["POST"])
+def logout():
+    body = request.get_json()
+    user_id = (body or {}).get("user_id")
+
+    try:
+        if user_id:
+            supabase.auth.admin.sign_out(user_id)
+    except Exception:
+        pass
+
+    return jsonify({"message": "Logged out."}), 200
+
+
 @app.route("/categories", methods=["GET"])
 def get_categories():
     persona_type = request.args.get("persona_type", "").strip()
