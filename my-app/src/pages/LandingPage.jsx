@@ -4,7 +4,8 @@ import AuthScreen from "../screens/AuthScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
 import UserTypeSelect from "../screens/UserTypeSelect";
-import { useSupabase } from "../hooks/useSupabase";
+
+const BACKEND_URL = "";
 
 const languages = [
   { nativeName: "English", key: "english", code: "en" },
@@ -26,7 +27,6 @@ const userTypes = [
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
-  const supabase = useSupabase();
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [selectedUserType, setSelectedUserType] = useState("newcomer");
   const [authMode, setAuthMode] = useState("login");
@@ -70,34 +70,15 @@ export default function LandingPage() {
           setIsSubmitting(true);
 
           try {
-            if (authMode === "login") {
-              const { error } = await supabase.auth.signInWithPassword({
-                email: email.trim(),
-                password,
-              });
-              if (error) throw error;
-              setAuthMessage("Logged in successfully.");
-            } else {
-              const { data, error } = await supabase.auth.signUp({
-                email: email.trim(),
-                password,
-              });
-              if (error) throw error;
-
-              if (data?.user?.id) {
-                const { error: usersInsertError } = await supabase.from("users").upsert(
-                  {
-                    id: data.user.id,
-                    email: data.user.email,
-                  },
-                  { onConflict: "id" },
-                );
-
-                if (usersInsertError) throw usersInsertError;
-              }
-
-              setAuthMessage("Account created. Check your email for confirmation if required.");
-            }
+            const endpoint = authMode === "login" ? "/auth/login" : "/auth/signup";
+            const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: email.trim(), password }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Authentication failed.");
+            setAuthMessage(data.message);
           } catch (error) {
             setAuthMessage(error?.message || "Authentication failed.");
           } finally {
