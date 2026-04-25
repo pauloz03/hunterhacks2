@@ -3,6 +3,19 @@ import { useAuth } from "../context/AuthContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
+const SLUG_LABELS = {
+  transit:       "Getting Around",
+  health:        "Finding a Doctor",
+  banking:       "Banking & Money",
+  community:     "Community",
+  emergency:     "Emergency Services",
+  food:          "Finding Food",
+  school:        "Enrolling Kids in School",
+  housing:       "Housing Basics",
+  "legal-rights": "Know Your Rights",
+  work:          "Finding Work",
+};
+
 const ALL_CATEGORIES = [
   { id: "transit",      slug: "transit",      label: "Transit",      icon: "🚇", description: "Subway, bus, and getting around NYC" },
   { id: "health",       slug: "health",       label: "Health",       icon: "🏥", description: "Clinics, hospitals, and health services" },
@@ -129,10 +142,7 @@ export default function HomeScreen({ onNavigate }) {
                     <span className="visitor-item-icon">{cat.icon}</span>
                   </span>
                   <div className="visitor-item-copy">
-                    <p className="visitor-item-title">{cat.label ?? cat.name}</p>
-                    {cat.description && (
-                      <p className="visitor-item-subtitle">{cat.description}</p>
-                    )}
+                    <p className="visitor-item-title">{SLUG_LABELS[cat.slug] ?? cat.slug}</p>
                   </div>
                   <span className="visitor-bookmark" aria-hidden>♡</span>
                 </article>
