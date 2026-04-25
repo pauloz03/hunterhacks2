@@ -14,7 +14,7 @@ def handle_preflight():
         res = jsonify({})
         res.headers["Access-Control-Allow-Origin"] = "*"
         res.headers["Access-Control-Allow-Headers"] = "Content-Type"
-        res.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        res.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
         return res, 200
 
 
@@ -22,7 +22,7 @@ def handle_preflight():
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
     return response
 
 supabase_url = os.getenv("SUPABASE_URL")
@@ -58,7 +58,10 @@ def signup():
                 on_conflict="id",
             ).execute()
 
-        return jsonify({"message": "Account created. Check your email for confirmation if required."})
+        return jsonify({
+            "message": "Account created. Check your email for confirmation if required.",
+            "user": {"id": user.id, "email": user.email} if user else None,
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
@@ -83,6 +86,26 @@ def login():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 401
+
+
+@app.route("/users/profile", methods=["PATCH"])
+def update_profile():
+    body = request.get_json()
+    user_id = (body or {}).get("user_id")
+    language_code = (body or {}).get("language_code")
+    persona_type = (body or {}).get("persona_type")
+
+    if not user_id:
+        return jsonify({"error": "user_id is required."}), 400
+
+    try:
+        supabase.table("users").update(
+            {"language_code": language_code, "persona_type": persona_type}
+        ).eq("id", user_id).execute()
+
+        return jsonify({"message": "Profile updated."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":

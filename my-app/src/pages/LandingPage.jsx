@@ -4,6 +4,9 @@ import AuthScreen from "../screens/AuthScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
 import UserTypeSelect from "../screens/UserTypeSelect";
+import Dashboard from "../screens/Dashboard";
+import ProtectedScreen from "../components/ProtectedScreen";
+import { useAuth } from "../context/AuthContext";
 
 const BACKEND_URL = "";
 
@@ -27,6 +30,7 @@ const userTypes = [
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
+  const { user, login } = useAuth();
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [selectedUserType, setSelectedUserType] = useState("newcomer");
   const [authMode, setAuthMode] = useState("login");
@@ -78,7 +82,12 @@ export default function LandingPage() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Authentication failed.");
-            setAuthMessage(data.message);
+            if (data.user) login(data.user);
+            if (authMode === "signup" && data.user) {
+              setCurrentScreen("userType");
+            } else {
+              setAuthMessage(data.message);
+            }
           } catch (error) {
             setAuthMessage(error?.message || "Authentication failed.");
           } finally {
@@ -89,13 +98,46 @@ export default function LandingPage() {
     );
   }
 
+  if (currentScreen === "dashboard") {
+    return (
+      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
+        <Dashboard />
+      </ProtectedScreen>
+    );
+  }
+
   if (currentScreen === "userType") {
     return (
-      <UserTypeSelect
-        userTypes={userTypes}
-        selectedUserType={selectedUserType}
-        onSelectUserType={setSelectedUserType}
-      />
+      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
+        <UserTypeSelect
+          userTypes={userTypes}
+          selectedUserType={selectedUserType}
+          onSelectUserType={setSelectedUserType}
+          isSubmitting={isSubmitting}
+          onContinue={async () => {
+            setIsSubmitting(true);
+            const selectedLang = languages.find((l) => l.nativeName === selectedLanguage);
+            try {
+              const res = await fetch(`${BACKEND_URL}/users/profile`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  user_id: user.id,
+                  language_code: selectedLang?.code ?? "en",
+                  persona_type: selectedUserType,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Failed to save profile.");
+              setCurrentScreen("dashboard");
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
+        />
+      </ProtectedScreen>
     );
   }
 
