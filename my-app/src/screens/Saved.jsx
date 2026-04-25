@@ -1,48 +1,47 @@
-export default function MapScreen({ userType = "neighbor", onNavigate }) {
+const savedItemsByUserType = {
+  visitor: [
+    { icon: "⚖️", title: "Downtown Legal Aid", subtitle: "0.9 mi away", type: "Legal" },
+    { icon: "🏥", title: "24/7 Urgent Care", subtitle: "1.3 mi away", type: "Health" },
+  ],
+  neighbor: [
+    { icon: "🏥", title: "Community Health Clinic", subtitle: "0.7 mi away", type: "Health" },
+    { icon: "📚", title: "Queens Public Library", subtitle: "1.1 mi away", type: "Education" },
+  ],
+  familiar: [
+    { icon: "🍽️", title: "Neighborhood Food Pantry", subtitle: "0.6 mi away", type: "Food" },
+    { icon: "🚌", title: "Transit Help Desk", subtitle: "1.8 mi away", type: "Transit" },
+  ],
+  refugee: [
+    { icon: "🏠", title: "Housing Intake Center", subtitle: "0.8 mi away", type: "Housing" },
+    { icon: "⚖️", title: "Refugee Legal Services", subtitle: "1.2 mi away", type: "Legal" },
+  ],
+};
+
+export default function SavedScreen({ userType = "neighbor", onNavigate }) {
+  const savedItems = savedItemsByUserType[userType] || savedItemsByUserType.neighbor;
+
   return (
     <main className={`visitor-page visitor-page--${userType}`}>
-      <section className="map-content">
-        <h1 className="map-title">Nearby resources</h1>
+      <section className="saved-content">
+        <h1 className="saved-title">Saved resources</h1>
+        <p className="saved-subtitle">Temporary page for map bookmarks while backend save is being built.</p>
 
-        <div className="map-search" role="search">
-          <span aria-hidden className="map-search-icon">
-            ⌕
-          </span>
-          <span className="map-search-placeholder">Search services near you...</span>
-        </div>
-
-        <div className="map-filters" aria-label="Resource categories">
-          <button type="button" className="map-filter active">
-            All
-          </button>
-          <button type="button" className="map-filter">
-            Health
-          </button>
-          <button type="button" className="map-filter">
-            Legal
-          </button>
-          <button type="button" className="map-filter">
-            Food
-          </button>
-          <button type="button" className="map-filter">
-            Housing
-          </button>
-        </div>
-
-        <section className="map-surface" aria-label="Temporary map">
-          <div className="map-grid" />
-
-          <span className="map-marker map-marker-book">📚</span>
-          <span className="map-marker map-marker-health">🏥</span>
-          <span className="map-marker map-marker-housing">🏠</span>
-          <span className="map-marker map-marker-legal">⚖️</span>
-          <span className="map-marker map-marker-food">🍽️</span>
-          <span className="map-marker map-marker-med">💊</span>
-
-          <span className="map-user-location" aria-hidden>
-            <span className="map-user-ring" />
-            <span className="map-user-dot" />
-          </span>
+        <section className="saved-list" aria-label="Bookmarked resources">
+          {savedItems.map((item) => (
+            <article key={item.title} className="saved-item-card">
+              <span className="saved-item-icon" aria-hidden>
+                {item.icon}
+              </span>
+              <div className="saved-item-copy">
+                <p className="saved-item-title">{item.title}</p>
+                <p className="saved-item-subtitle">{item.subtitle}</p>
+                <span className="saved-item-type">{item.type}</span>
+              </div>
+              <span className="saved-item-bookmark" aria-hidden>
+                ♥
+              </span>
+            </article>
+          ))}
         </section>
       </section>
 
@@ -56,8 +55,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Home</span>
         </div>
-        <div className="visitor-nav-item active">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Map">
+        <div className="visitor-nav-item">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Map" onClick={() => onNavigate("map")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M12 21s6-5.5 6-11a6 6 0 1 0-12 0c0 5.5 6 11 6 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
@@ -73,8 +72,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Ask</span>
         </div>
-        <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Saved" onClick={() => onNavigate("saved")}>
+        <div className="visitor-nav-item active">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Saved">
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3.5L6 20V5a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

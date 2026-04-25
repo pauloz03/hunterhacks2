@@ -954,6 +954,283 @@ body {
   border: 3px solid #f4f8f5;
 }
 
+.ask-content {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}
+
+.ask-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ask-title {
+  margin: 0;
+  color: #1d3228;
+  font-size: clamp(30px, 6vw, 44px);
+}
+
+.ask-subtitle {
+  margin: 0;
+  color: #5d6c63;
+  font-size: clamp(14px, 2.8vw, 20px);
+  line-height: 1.4;
+}
+
+.ask-chat {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ask-bubble {
+  max-width: 88%;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: clamp(14px, 2.6vw, 18px);
+  line-height: 1.35;
+}
+
+.ask-bubble-assistant {
+  background: #f6f7f4;
+  color: #223129;
+  border: 1px solid #d9ddd6;
+  align-self: flex-start;
+}
+
+.ask-bubble-user {
+  background: color-mix(in srgb, var(--persona-accent) 20%, white);
+  color: #1d3228;
+  border: 1px solid color-mix(in srgb, var(--persona-accent) 30%, white);
+  align-self: flex-end;
+}
+
+.ask-quick-prompts {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.ask-chip {
+  border: 1px solid #d8ddd8;
+  background: #f9f9f7;
+  color: #42554b;
+  border-radius: 999px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  font-size: clamp(12px, 2.4vw, 16px);
+  font-weight: 600;
+}
+
+.ask-input-wrap {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 16px;
+  border: 1px solid #d5ddd5;
+  background: #f9f9f7;
+  padding: 8px 8px 8px 14px;
+}
+
+.ask-input {
+  border: 0;
+  background: transparent;
+  flex: 1;
+  font-size: clamp(14px, 2.6vw, 18px);
+  color: #25342d;
+}
+
+.ask-input:focus {
+  outline: none;
+}
+
+.ask-send-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 0;
+  background: var(--persona-accent);
+  color: #f6fbf7;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.profile-content {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}
+
+.profile-title {
+  margin: 0;
+  color: #1d3228;
+  font-size: clamp(30px, 6vw, 44px);
+}
+
+.profile-subtitle {
+  margin: 8px 0 0;
+  color: #5d6c63;
+  font-size: clamp(14px, 2.8vw, 20px);
+  line-height: 1.4;
+}
+
+.profile-card {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 22px;
+  border: 1px solid #d9ded8;
+  background: #f8faf7;
+  padding: 14px;
+}
+
+.profile-avatar {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--persona-accent) 25%, white);
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-name {
+  margin: 0;
+  color: #1f3129;
+  font-weight: 700;
+  font-size: clamp(18px, 3vw, 24px);
+}
+
+.profile-role-pill {
+  width: fit-content;
+  background: color-mix(in srgb, var(--persona-accent) 24%, white);
+  color: #173027;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: clamp(12px, 2.2vw, 15px);
+  font-weight: 700;
+}
+
+.profile-note {
+  margin: 0;
+  color: #4d6156;
+  font-size: clamp(13px, 2.5vw, 17px);
+  line-height: 1.35;
+}
+
+.profile-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-list-item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d9ded8;
+  background: #ffffff;
+  color: #21342b;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: clamp(14px, 2.6vw, 18px);
+  font-weight: 600;
+}
+
+.saved-content {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}
+
+.saved-title {
+  margin: 0;
+  color: #1d3228;
+  font-size: clamp(30px, 6vw, 44px);
+}
+
+.saved-subtitle {
+  margin: 8px 0 0;
+  color: #5d6c63;
+  font-size: clamp(14px, 2.8vw, 20px);
+  line-height: 1.4;
+}
+
+.saved-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saved-item-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  border: 1px solid #d9ded8;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.saved-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--persona-accent) 22%, white);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.saved-item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.saved-item-title {
+  margin: 0;
+  color: #1f3129;
+  font-size: clamp(15px, 2.8vw, 20px);
+  font-weight: 700;
+}
+
+.saved-item-subtitle {
+  margin: 0;
+  color: #5d6f65;
+  font-size: clamp(12px, 2.3vw, 15px);
+}
+
+.saved-item-type {
+  width: fit-content;
+  border-radius: 999px;
+  background: #f0f3ee;
+  color: #375046;
+  padding: 3px 10px;
+  font-size: clamp(11px, 2.1vw, 13px);
+  font-weight: 700;
+}
+
+.saved-item-bookmark {
+  color: var(--persona-accent);
+  font-size: 20px;
+}
+
 .visitor-page--visitor {
   --persona-accent: #009e95;
   --persona-pill-bg: #b5e8e4;
@@ -1088,5 +1365,17 @@ body {
   .map-surface {
     height: min(56vh, 520px);
     border-radius: 22px;
+  }
+
+  .ask-content {
+    padding: 12px 12px 20px;
+  }
+
+  .profile-content {
+    padding: 12px 12px 20px;
+  }
+
+  .saved-content {
+    padding: 12px 12px 20px;
   }
 }

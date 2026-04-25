@@ -116,7 +116,7 @@ export default function HomeScreen({ userType = "neighbor", onNavigate }) {
           <span className="visitor-nav-label">Map</span>
         </div>
         <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Ask">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Ask" onClick={() => onNavigate?.("ask")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7A2.5 2.5 0 0 1 17.5 16H9l-5 4v-13.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -124,7 +124,7 @@ export default function HomeScreen({ userType = "neighbor", onNavigate }) {
           <span className="visitor-nav-label">Ask</span>
         </div>
         <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Saved">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Saved" onClick={() => onNavigate?.("saved")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3.5L6 20V5a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -132,7 +132,7 @@ export default function HomeScreen({ userType = "neighbor", onNavigate }) {
           <span className="visitor-nav-label">Saved</span>
         </div>
         <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Profile">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Profile" onClick={() => onNavigate?.("profile")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="2" />
               <path d="M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

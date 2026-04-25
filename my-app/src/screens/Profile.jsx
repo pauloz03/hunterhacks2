@@ -1,48 +1,40 @@
-export default function MapScreen({ userType = "neighbor", onNavigate }) {
+export default function ProfileScreen({ userType = "neighbor", onNavigate }) {
+  const profileByUserType = {
+    visitor: { role: "Visitor", note: "Short stay profile with quick trip preferences." },
+    neighbor: { role: "New Neighbor", note: "Local setup for your new neighborhood essentials." },
+    familiar: { role: "Already Familiar", note: "Keep your saved places and routine updates here." },
+    refugee: { role: "Refugee", note: "Support-focused profile with trusted resources." },
+  };
+
+  const profile = profileByUserType[userType] || profileByUserType.neighbor;
+
   return (
     <main className={`visitor-page visitor-page--${userType}`}>
-      <section className="map-content">
-        <h1 className="map-title">Nearby resources</h1>
+      <section className="profile-content">
+        <h1 className="profile-title">Profile</h1>
+        <p className="profile-subtitle">Temporary page while profile features are being built.</p>
 
-        <div className="map-search" role="search">
-          <span aria-hidden className="map-search-icon">
-            ⌕
-          </span>
-          <span className="map-search-placeholder">Search services near you...</span>
-        </div>
+        <article className="profile-card">
+          <div className="profile-avatar" aria-hidden>
+            👤
+          </div>
+          <div className="profile-details">
+            <p className="profile-name">Landed User</p>
+            <span className="profile-role-pill">{profile.role}</span>
+            <p className="profile-note">{profile.note}</p>
+          </div>
+        </article>
 
-        <div className="map-filters" aria-label="Resource categories">
-          <button type="button" className="map-filter active">
-            All
+        <section className="profile-list" aria-label="Profile actions">
+          <button type="button" className="profile-list-item">
+            Edit account details
           </button>
-          <button type="button" className="map-filter">
-            Health
+          <button type="button" className="profile-list-item">
+            Language preferences
           </button>
-          <button type="button" className="map-filter">
-            Legal
+          <button type="button" className="profile-list-item">
+            Notification settings
           </button>
-          <button type="button" className="map-filter">
-            Food
-          </button>
-          <button type="button" className="map-filter">
-            Housing
-          </button>
-        </div>
-
-        <section className="map-surface" aria-label="Temporary map">
-          <div className="map-grid" />
-
-          <span className="map-marker map-marker-book">📚</span>
-          <span className="map-marker map-marker-health">🏥</span>
-          <span className="map-marker map-marker-housing">🏠</span>
-          <span className="map-marker map-marker-legal">⚖️</span>
-          <span className="map-marker map-marker-food">🍽️</span>
-          <span className="map-marker map-marker-med">💊</span>
-
-          <span className="map-user-location" aria-hidden>
-            <span className="map-user-ring" />
-            <span className="map-user-dot" />
-          </span>
         </section>
       </section>
 
@@ -56,8 +48,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Home</span>
         </div>
-        <div className="visitor-nav-item active">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Map">
+        <div className="visitor-nav-item">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Map" onClick={() => onNavigate("map")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M12 21s6-5.5 6-11a6 6 0 1 0-12 0c0 5.5 6 11 6 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
@@ -81,8 +73,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Saved</span>
         </div>
-        <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Profile" onClick={() => onNavigate("profile")}>
+        <div className="visitor-nav-item active">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Profile">
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="2" />
               <path d="M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

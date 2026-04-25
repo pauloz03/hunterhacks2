@@ -1,49 +1,40 @@
-export default function MapScreen({ userType = "neighbor", onNavigate }) {
+export default function AskScreen({ userType = "neighbor", onNavigate }) {
   return (
     <main className={`visitor-page visitor-page--${userType}`}>
-      <section className="map-content">
-        <h1 className="map-title">Nearby resources</h1>
+      <section className="ask-content">
+        <header className="ask-header">
+          <h1 className="ask-title">Ask assistant</h1>
+          <p className="ask-subtitle">Get help finding services, nearby support, and next steps.</p>
+        </header>
 
-        <div className="map-search" role="search">
-          <span aria-hidden className="map-search-icon">
-            ⌕
-          </span>
-          <span className="map-search-placeholder">Search services near you...</span>
-        </div>
-
-        <div className="map-filters" aria-label="Resource categories">
-          <button type="button" className="map-filter active">
-            All
-          </button>
-          <button type="button" className="map-filter">
-            Health
-          </button>
-          <button type="button" className="map-filter">
-            Legal
-          </button>
-          <button type="button" className="map-filter">
-            Food
-          </button>
-          <button type="button" className="map-filter">
-            Housing
-          </button>
-        </div>
-
-        <section className="map-surface" aria-label="Temporary map">
-          <div className="map-grid" />
-
-          <span className="map-marker map-marker-book">📚</span>
-          <span className="map-marker map-marker-health">🏥</span>
-          <span className="map-marker map-marker-housing">🏠</span>
-          <span className="map-marker map-marker-legal">⚖️</span>
-          <span className="map-marker map-marker-food">🍽️</span>
-          <span className="map-marker map-marker-med">💊</span>
-
-          <span className="map-user-location" aria-hidden>
-            <span className="map-user-ring" />
-            <span className="map-user-dot" />
-          </span>
+        <section className="ask-chat">
+          <article className="ask-bubble ask-bubble-assistant">
+            Hi! I can help with housing, health, legal support, food, and local resources.
+          </article>
+          <article className="ask-bubble ask-bubble-user">Where can I find free legal help nearby?</article>
+          <article className="ask-bubble ask-bubble-assistant">
+            I found 2 legal clinics within 20 minutes. Want me to show them on the map?
+          </article>
         </section>
+
+        <div className="ask-quick-prompts" aria-label="Suggested prompts">
+          <button type="button" className="ask-chip">
+            Find food support
+          </button>
+          <button type="button" className="ask-chip">
+            Nearest clinic
+          </button>
+          <button type="button" className="ask-chip">
+            Housing options
+          </button>
+        </div>
+
+        <div className="ask-input-wrap">
+          <input className="ask-input" placeholder="Type your question..." />
+          <button type="button" className="ask-send-button" aria-label="Send">
+            ↑
+          </button>
+        </div>
       </section>
 
       <nav className="visitor-bottom-nav" aria-label="Primary">
@@ -56,8 +47,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Home</span>
         </div>
-        <div className="visitor-nav-item active">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Map">
+        <div className="visitor-nav-item">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Map" onClick={() => onNavigate("map")}>
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M12 21s6-5.5 6-11a6 6 0 1 0-12 0c0 5.5 6 11 6 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
@@ -65,8 +56,8 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
           </button>
           <span className="visitor-nav-label">Map</span>
         </div>
-        <div className="visitor-nav-item">
-          <button type="button" className="visitor-nav-icon-button" aria-label="Ask" onClick={() => onNavigate("ask")}>
+        <div className="visitor-nav-item active">
+          <button type="button" className="visitor-nav-icon-button" aria-label="Ask">
             <svg className="visitor-nav-icon" viewBox="0 0 24 24" fill="none">
               <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7A2.5 2.5 0 0 1 17.5 16H9l-5 4v-13.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
