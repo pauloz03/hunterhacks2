@@ -70,7 +70,6 @@ export default function SavedScreen() {
     <main className={`visitor-page visitor-page--${persona}`}>
       <section className="saved-content">
         <h1 className="saved-title">{t("saved.title")}</h1>
-        <p className="saved-subtitle">{t("saved.subtitle")}</p>
 
         <section className="saved-list" aria-label={t("saved.ariaBookmarked")}>
           {loading ? <p className="saved-item-subtitle">Loading…</p> : null}
@@ -91,23 +90,13 @@ export default function SavedScreen() {
                 </article>
               ))
             : null}
-          {!loading && savedResources.length === 0
-            ? fallbackItems.map((item) => (
-                <article key={item.titleKey} className="saved-item-card">
-                  <span className="saved-item-icon" aria-hidden>
-                    {item.icon}
-                  </span>
-                  <div className="saved-item-copy">
-                    <p className="saved-item-title">{t(`saved.items.title.${item.titleKey}`)}</p>
-                    <p className="saved-item-subtitle">{t(`saved.items.subtitle.${item.subtitleKey}`)}</p>
-                    <span className="saved-item-type">{t(`saved.items.type.${item.typeKey}`)}</span>
-                  </div>
-                  <span className="saved-item-bookmark" aria-hidden>
-                    ♥
-                  </span>
-                </article>
-              ))
-            : null}
+          {!loading && savedResources.length === 0 ? (
+            <div className="saved-empty">
+              <span className="saved-empty-icon" aria-hidden>🔖</span>
+              <p className="saved-empty-title">Nothing saved yet</p>
+              <p className="saved-empty-subtitle">Tap the bookmark on any resource in the map to save it here.</p>
+            </div>
+          ) : null}
         </section>
       </section>
 

@@ -1930,6 +1930,35 @@ body {
   line-height: 1.4;
 }
 
+.saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 10px;
+}
+
+.saved-empty-icon {
+  font-size: 40px;
+}
+
+.saved-empty-title {
+  margin: 0;
+  font-size: clamp(18px, 3.5vw, 22px);
+  font-weight: 700;
+  color: #3a3532;
+}
+
+.saved-empty-subtitle {
+  margin: 0;
+  font-size: clamp(13px, 2.5vw, 15px);
+  color: #8a847e;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
 .saved-list {
   margin-top: 14px;
   display: flex;
