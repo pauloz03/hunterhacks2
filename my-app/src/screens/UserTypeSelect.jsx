@@ -1,13 +1,17 @@
+import { useTranslation } from "react-i18next";
+
 export default function UserTypeSelect({ userTypes, selectedUserType, onSelectUserType, onContinue, isSubmitting }) {
+  const { t } = useTranslation();
+
   return (
     <main className="page user-type-page">
       <section className="user-type-content">
         <header className="user-type-header">
-          <h1 className="user-type-title">Who are you visiting as?</h1>
-          <p className="user-type-subtitle">We'll personalize your experience and language.</p>
+          <h1 className="user-type-title">{t("userType.title")}</h1>
+          <p className="user-type-subtitle">{t("userType.subtitle")}</p>
         </header>
 
-        <section className="user-type-list" aria-label="User type selection">
+        <section className="user-type-list" aria-label={t("userType.ariaLabel")}>
           {userTypes.map((type) => {
             const isActive = selectedUserType === type.id;
             return (
@@ -39,7 +43,7 @@ export default function UserTypeSelect({ userTypes, selectedUserType, onSelectUs
           onClick={onContinue}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : "Continue"}
+          {isSubmitting ? t("common.saving") : t("common.continue")}
         </button>
       </section>
     </main>

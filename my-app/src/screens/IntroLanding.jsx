@@ -6,42 +6,42 @@ export default function IntroLanding({ languages, copy, onGetStarted }) {
           <span className="floating-icon" aria-hidden>
             🚇
           </span>
-          <span className="floating-label">Transit</span>
+          <span className="floating-label">{copy.floatingTransit}</span>
         </article>
 
         <article className="floating-card card-health">
           <span className="floating-icon" aria-hidden>
             🏥
           </span>
-          <span className="floating-label">Health</span>
+          <span className="floating-label">{copy.floatingHealth}</span>
         </article>
 
         <article className="floating-card card-legal">
           <span className="floating-icon" aria-hidden>
             ⚖️
           </span>
-          <span className="floating-label">Legal</span>
+          <span className="floating-label">{copy.floatingLegal}</span>
         </article>
 
         <article className="floating-card card-food">
           <span className="floating-icon" aria-hidden>
             🍽️
           </span>
-          <span className="floating-label">Food</span>
+          <span className="floating-label">{copy.floatingFood}</span>
         </article>
 
         <article className="floating-card card-housing">
           <span className="floating-icon" aria-hidden>
             🏠
           </span>
-          <span className="floating-label">Housing</span>
+          <span className="floating-label">{copy.floatingHousing}</span>
         </article>
 
         <article className="floating-card card-education">
           <span className="floating-icon" aria-hidden>
             📚
           </span>
-          <span className="floating-label">Education</span>
+          <span className="floating-label">{copy.floatingEducation}</span>
         </article>
 
         <section className="intro-center">
@@ -54,7 +54,7 @@ export default function IntroLanding({ languages, copy, onGetStarted }) {
             <span>{copy.cityPhrase}</span> {copy.languagePhrase}
           </p>
 
-          <div className="intro-language-pills" aria-label="Supported languages">
+          <div className="intro-language-pills" aria-label={copy.supportedLanguagesAria}>
             {languages.slice(0, 6).map((language) => (
               <span key={language.nativeName} className="pill">
                 {language.nativeName}

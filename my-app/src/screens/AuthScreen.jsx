@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export default function AuthScreen({
   selectedLanguage,
   authMode,
@@ -11,31 +13,33 @@ export default function AuthScreen({
   isSubmitting,
   message,
 }) {
+  const { t } = useTranslation();
+
   return (
     <main className="page auth-page">
       <section className="content auth-content">
         <button type="button" className="auth-back-button" onClick={onBack}>
-          ← Back to language selection
+          ← {t("auth.backToLanguage")}
         </button>
 
         <header className="auth-header">
-          <span className="auth-eyebrow">Language selected: {selectedLanguage}</span>
-          <h1 className="auth-title">{authMode === "login" ? "Welcome back" : "Create your account"}</h1>
+          <span className="auth-eyebrow">{t("auth.languageSelected")} {selectedLanguage}</span>
+          <h1 className="auth-title">{authMode === "login" ? t("auth.welcomeBack") : t("auth.createAccount")}</h1>
           <p className="auth-subtitle">
             {authMode === "login"
-              ? "Log in to continue with personalized guidance."
-              : "Sign up to save your progress and language preferences."}
+              ? t("auth.loginSubtitle")
+              : t("auth.signupSubtitle")}
           </p>
         </header>
 
-        <div className="auth-mode-toggle" role="tablist" aria-label="Authentication mode">
+        <div className="auth-mode-toggle" role="tablist" aria-label={t("auth.modeAriaLabel")}>
           <button
             type="button"
             className={`auth-toggle-button ${authMode === "login" ? "active" : ""}`}
             onClick={() => onSetAuthMode("login")}
             aria-pressed={authMode === "login"}
           >
-            Log in
+            {t("auth.logIn")}
           </button>
           <button
             type="button"
@@ -43,19 +47,19 @@ export default function AuthScreen({
             onClick={() => onSetAuthMode("signup")}
             aria-pressed={authMode === "signup"}
           >
-            Sign up
+            {t("auth.signUp")}
           </button>
         </div>
 
         <form className="auth-form" onSubmit={onSubmit}>
           <label className="auth-label" htmlFor="email-input">
-            Email
+            {t("auth.email")}
           </label>
           <input
             className="auth-input"
             id="email-input"
             type="email"
-            placeholder="you@example.com"
+            placeholder={t("auth.emailPlaceholder")}
             required
             value={email}
             onChange={(event) => onEmailChange(event.target.value)}
@@ -63,13 +67,13 @@ export default function AuthScreen({
           />
 
           <label className="auth-label" htmlFor="password-input">
-            Password
+            {t("auth.password")}
           </label>
           <input
             className="auth-input"
             id="password-input"
             type="password"
-            placeholder="••••••••"
+            placeholder={t("auth.passwordPlaceholder")}
             required
             value={password}
             onChange={(event) => onPasswordChange(event.target.value)}
@@ -77,7 +81,7 @@ export default function AuthScreen({
           />
 
           <button type="submit" className="auth-submit-button" disabled={isSubmitting}>
-            {authMode === "login" ? "Log in" : "Create account"}
+            {authMode === "login" ? t("auth.logIn") : t("auth.createAccountCta")}
           </button>
           {message ? <p className="auth-message">{message}</p> : null}
         </form>

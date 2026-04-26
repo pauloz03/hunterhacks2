@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import AuthScreen from "../screens/AuthScreen";
-import AskScreen from "../screens/Ask";
-import HomeScreen from "../screens/HomeScreen";
 import IntroLanding from "../screens/IntroLanding";
 import LanguageSelect from "../screens/LanguageSelect";
-import MapScreen from "../screens/Map";
-import ProfileScreen from "../screens/Profile";
-import SavedScreen from "../screens/Saved";
 import UserTypeSelect from "../screens/UserTypeSelect";
 import ProtectedScreen from "../components/ProtectedScreen";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -26,19 +22,20 @@ const languages = [
 ];
 
 const userTypes = [
-  { id: "visitor", icon: "✈️", title: "Visitor", subtitle: "1-7 days" },
-  { id: "neighbor", icon: "🏘️", title: "New Neighbor", subtitle: "Moved within NYC" },
-  { id: "familiar", icon: "🧭", title: "Already Familiar", subtitle: "Know the neighborhood" },
-  { id: "refugee", icon: "🕊️", title: "Refugee", subtitle: "Seeking safety" },
+  { id: "visitor", icon: "✈️", titleKey: "visitor", subtitleKey: "visitorSubtitle" },
+  { id: "neighbor", icon: "🏘️", titleKey: "neighbor", subtitleKey: "neighborSubtitle" },
+  { id: "familiar", icon: "🧭", titleKey: "familiar", subtitleKey: "familiarSubtitle" },
+  { id: "refugee", icon: "🕊️", titleKey: "refugee", subtitleKey: "refugeeSubtitle" },
 ];
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const { user, login } = useAuth();
+  const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
   const [selectedUserType, setSelectedUserType] = useState("neighbor");
   const [authMode, setAuthMode] = useState("login");
-  const [currentScreen, setCurrentScreen] = useState(() => user ? "home" : "intro");
+  const [currentScreen, setCurrentScreen] = useState("intro");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authMessage, setAuthMessage] = useState("");
@@ -47,6 +44,11 @@ export default function LandingPage() {
   const localizedLanguages = languages.map((language) => ({
     ...language,
     englishName: t(`languageNames.${language.key}`),
+  }));
+  const localizedUserTypes = userTypes.map((type) => ({
+    ...type,
+    title: t(`userType.options.${type.titleKey}`),
+    subtitle: t(`userType.options.${type.subtitleKey}`),
   }));
 
   if (currentScreen === "intro") {
@@ -59,6 +61,13 @@ export default function LandingPage() {
           cityPhrase: t("intro.cityPhrase"),
           languagePhrase: t("intro.languagePhrase"),
           getStarted: t("intro.getStarted"),
+          floatingTransit: t("intro.floating.transit"),
+          floatingHealth: t("intro.floating.health"),
+          floatingLegal: t("intro.floating.legal"),
+          floatingFood: t("intro.floating.food"),
+          floatingHousing: t("intro.floating.housing"),
+          floatingEducation: t("intro.floating.education"),
+          supportedLanguagesAria: t("intro.supportedLanguagesAria"),
         }}
         onGetStarted={() => setCurrentScreen("language")}
       />
@@ -83,7 +92,7 @@ export default function LandingPage() {
           setAuthMessage("");
 
           if (!email.trim() || !password.trim()) {
-            setAuthMessage("Email and password are required.");
+            setAuthMessage(t("auth.requiredEmailPassword"));
             return;
           }
 
@@ -97,17 +106,17 @@ export default function LandingPage() {
               body: JSON.stringify({ email: email.trim(), password }),
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Authentication failed.");
+            if (!res.ok) throw new Error(data.error || t("auth.failed"));
             if (data.user) login(data.user);
             if (authMode === "login" && data.user) {
-              setCurrentScreen("home");
+              navigate("/home");
             } else if (authMode === "signup" && data.user) {
               setCurrentScreen("userType");
             } else {
               setAuthMessage(data.message);
             }
           } catch (error) {
-            setAuthMessage(error?.message || "Authentication failed.");
+              setAuthMessage(error?.message || t("auth.failed"));
           } finally {
             setIsSubmitting(false);
           }
@@ -118,9 +127,9 @@ export default function LandingPage() {
 
   if (currentScreen === "userType") {
     return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
+      <ProtectedScreen>
         <UserTypeSelect
-          userTypes={userTypes}
+          userTypes={localizedUserTypes}
           selectedUserType={selectedUserType}
           onSelectUserType={setSelectedUserType}
           isSubmitting={isSubmitting}
@@ -138,9 +147,9 @@ export default function LandingPage() {
                 }),
               });
               const data = await res.json();
-              if (!res.ok) throw new Error(data.error || "Failed to save profile.");
+              if (!res.ok) throw new Error(data.error || t("userType.saveFailed"));
               login({ ...user, persona_type: selectedUserType });
-              setCurrentScreen("home");
+              navigate("/home");
             } catch (err) {
               console.error(err);
             } finally {
@@ -148,46 +157,6 @@ export default function LandingPage() {
             }
           }}
         />
-      </ProtectedScreen>
-    );
-  }
-
-  if (currentScreen === "home") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <HomeScreen onNavigate={setCurrentScreen} />
-      </ProtectedScreen>
-    );
-  }
-
-  if (currentScreen === "map") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <MapScreen onNavigate={setCurrentScreen} />
-      </ProtectedScreen>
-    );
-  }
-
-  if (currentScreen === "ask") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <AskScreen onNavigate={setCurrentScreen} />
-      </ProtectedScreen>
-    );
-  }
-
-  if (currentScreen === "profile") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <ProfileScreen onNavigate={setCurrentScreen} />
-      </ProtectedScreen>
-    );
-  }
-
-  if (currentScreen === "saved") {
-    return (
-      <ProtectedScreen onUnauthenticated={() => setCurrentScreen("auth")}>
-        <SavedScreen onNavigate={setCurrentScreen} />
       </ProtectedScreen>
     );
   }
