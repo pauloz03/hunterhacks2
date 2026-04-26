@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import VisitorFooterNav from "../components/VisitorFooterNav";
+import guideData from "./guideData.json";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -10,6 +11,19 @@ const EXTRA_SERVICES = [
   { icon: "🗺️", navKey: "map", route: "/map" },
   { icon: "💬", navKey: "ask", route: "/ask" },
 ];
+
+const SLUG_TO_GUIDE_ID = {
+  transit: "getting-around",
+  health: "finding-a-doctor",
+  banking: "banking-money",
+  community: "community",
+  emergency: "emergency",
+  food: "finding-food",
+  school: "enrolling-kids",
+  housing: "housing-basics",
+  "legal-rights": "know-your-rights",
+  work: "finding-work",
+};
 
 function formatSlug(slug) {
   return slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -26,7 +40,7 @@ const moreModalStyles = `
   }
 `;
 
-function MoreModal({ onClose, navigate, categories, t }) {
+function MoreModal({ onClose, navigate, categories, t, onCategorySelect }) {
   const [closing, setClosing] = useState(false);
 
   function handleClose() {
@@ -38,7 +52,7 @@ function MoreModal({ onClose, navigate, categories, t }) {
     ...categories.map(cat => ({
       icon: cat.icon,
       label: t(`home.categoryLabel.${cat.slug}`, { defaultValue: formatSlug(cat.slug) }),
-      action: () => navigate(`/category/${cat.slug}`, { state: { cat } }),
+      action: () => onCategorySelect(cat),
     })),
     ...EXTRA_SERVICES.map(s => ({
       icon: s.icon,
@@ -98,6 +112,157 @@ function MoreModal({ onClose, navigate, categories, t }) {
   );
 }
 
+function CategoryModal({ category, onClose, t }) {
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const guideId = SLUG_TO_GUIDE_ID[category?.slug];
+  const guideCategory = guideData.categories.find((entry) => entry.id === guideId);
+  const categoryTitle = t(`home.categoryLabel.${category.slug}`, { defaultValue: formatSlug(category.slug) });
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0, 0, 0, 0.45)",
+        zIndex: 1100,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
+      <div
+        onClick={(event) => event.stopPropagation()}
+        style={{
+          width: "100%",
+          maxWidth: 520,
+          maxHeight: "82vh",
+          overflowY: "auto",
+          background: "#f7f8f6",
+          borderRadius: 20,
+          boxShadow: "0 12px 36px rgba(0,0,0,0.2)",
+          paddingBottom: 18,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            padding: "18px 16px 12px",
+            background: "#fff",
+            borderBottom: "1px solid #e8ece8",
+            position: "sticky",
+            top: 0,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 28 }}>{category.icon || "📋"}</span>
+            <h3 style={{ margin: 0, fontSize: 18, color: "#1d3228" }}>{categoryTitle}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              border: "none",
+              background: "#ebefeb",
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              fontSize: 18,
+              cursor: "pointer",
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        <div style={{ padding: "14px 14px 0" }}>
+          {!guideCategory ? (
+            <p style={{ margin: 0, color: "#6a776f" }}>
+              {t("category.noGuides", { defaultValue: "No guides available yet." })}
+            </p>
+          ) : (
+            guideCategory.topics.map((topic, index) => (
+              <button
+                type="button"
+                key={topic.id}
+                onClick={() => setSelectedTopic(topic)}
+                style={{
+                  width: "100%",
+                  border: "none",
+                  background: "#fff",
+                  borderRadius: 14,
+                  padding: "13px 14px",
+                  marginBottom: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  textAlign: "left",
+                  cursor: "pointer",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
+                }}
+              >
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "var(--persona-soft-bg, #e8f4f0)",
+                    color: "#1f6c57",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  {index + 1}
+                </span>
+                <span style={{ flex: 1, color: "#1d3228", fontSize: 14, lineHeight: 1.35 }}>{topic.title}</span>
+                <span style={{ color: "#809286", fontSize: 17 }}>›</span>
+              </button>
+            ))
+          )}
+        </div>
+
+        {selectedTopic ? (
+          <div style={{ margin: "8px 14px 0", borderRadius: 14, background: "#fff", padding: "14px 14px 8px" }}>
+            <div style={{ display: "flex", alignItems: "start", justifyContent: "space-between", gap: 10 }}>
+              <div>
+                <p style={{ margin: 0, color: "#5d6c63", fontSize: 12 }}>
+                  {t("category.readTime", { defaultValue: "{{time}} read", time: selectedTopic.readTime })}
+                </p>
+                <h4 style={{ margin: "4px 0 0", fontSize: 16, color: "#1d3228" }}>{selectedTopic.title}</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedTopic(null)}
+                style={{ border: "none", background: "transparent", fontSize: 18, cursor: "pointer", color: "#6f7f75" }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              {selectedTopic.steps.map((step, idx) => (
+                <div key={`${selectedTopic.id}-step-${idx}`} style={{ marginBottom: 12 }}>
+                  <p style={{ margin: "0 0 4px", fontWeight: 700, color: "#264437", fontSize: 13 }}>
+                    {idx + 1}. {step.title}
+                  </p>
+                  <p style={{ margin: 0, color: "#4e6056", fontSize: 13, lineHeight: 1.55 }}>{step.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
@@ -107,6 +272,7 @@ export default function HomeScreen() {
   const [personaType, setPersonaType] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showMore, setShowMore] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -188,7 +354,7 @@ export default function HomeScreen() {
               {categories.map((cat) => (
                 <button
                   key={cat.id ?? cat.slug}
-                  onClick={() => navigate(`/category/${cat.slug}`, { state: { cat } })}
+                  onClick={() => setSelectedCategory(cat)}
                   style={{
                     background: "none", border: "none", padding: 0,
                     cursor: "pointer", display: "flex", flexDirection: "column",
@@ -245,7 +411,21 @@ export default function HomeScreen() {
 
       <VisitorFooterNav />
 
-      {showMore && <MoreModal onClose={() => setShowMore(false)} navigate={navigate} categories={categories} t={t} />}
+      {showMore && (
+        <MoreModal
+          onClose={() => setShowMore(false)}
+          navigate={navigate}
+          categories={categories}
+          t={t}
+          onCategorySelect={(cat) => {
+            setShowMore(false);
+            setSelectedCategory(cat);
+          }}
+        />
+      )}
+      {selectedCategory ? (
+        <CategoryModal category={selectedCategory} onClose={() => setSelectedCategory(null)} t={t} />
+      ) : null}
     </main>
   );
 }

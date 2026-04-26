@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import VisitorFooterNav from "../components/VisitorFooterNav";
-import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
 export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
   const { user, logout, updateUser } = useAuth();
-  const navigate = useNavigate();
   const persona = user?.persona_type ?? "neighbor";
   const [loggingOut, setLoggingOut] = useState(false);
   const [savingName, setSavingName] = useState(false);
@@ -132,7 +130,10 @@ export default function ProfileScreen() {
               setIsEditingName(true);
             }}
           >
-            {t("profile.editAccount")}
+            <span>{t("profile.editAccount")}</span>
+            <span className="profile-list-item-arrow" aria-hidden>
+              ▼
+            </span>
           </button>
           {isEditingName ? (
             <form className="profile-name-form" onSubmit={handleSaveName}>
@@ -177,7 +178,10 @@ export default function ProfileScreen() {
               setIsEditingLanguage(true);
             }}
           >
-            {t("profile.languagePreferences")}
+            <span>{t("profile.languagePreferences")}</span>
+            <span className="profile-list-item-arrow" aria-hidden>
+              ▼
+            </span>
           </button>
           {isEditingLanguage ? (
             <form className="profile-language-form" onSubmit={handleSaveLanguage}>
@@ -216,16 +220,16 @@ export default function ProfileScreen() {
               {languageError ? <p className="profile-language-error">{languageError}</p> : null}
             </form>
           ) : null}
-          <button type="button" className="profile-list-item" onClick={() => navigate("/saved")}>
-            Saved resources
-          </button>
           <button
             type="button"
             className="profile-list-item profile-list-item--logout"
             onClick={handleLogout}
             disabled={loggingOut}
           >
-            {loggingOut ? t("profile.signingOut") : t("profile.signOut")}
+            <span>{loggingOut ? t("profile.signingOut") : t("profile.signOut")}</span>
+            <span className="profile-list-item-arrow" aria-hidden>
+              ▼
+            </span>
           </button>
         </section>
       </section>

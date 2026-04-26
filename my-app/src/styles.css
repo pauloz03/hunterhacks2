@@ -1647,6 +1647,10 @@ body {
 
 .profile-list-item {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   text-align: left;
   border: 1px solid #d9ded8;
   background: #ffffff;
@@ -1656,6 +1660,11 @@ body {
   font-size: clamp(14px, 2.6vw, 18px);
   font-weight: 600;
   cursor: pointer;
+}
+
+.profile-list-item-arrow {
+  font-size: 12px;
+  line-height: 1;
 }
 
 .profile-name-form {
