@@ -195,24 +195,29 @@ export default function LandingPage() {
           isSubmitting={isSubmitting}
           onContinue={async () => {
             setIsSubmitting(true);
+            const personaToSave = selectedUserType;
             try {
-              const res = await fetch(`${BACKEND_URL}/users/profile`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  user_id: user.id,
-                  language_code: selectedLanguageCode || "en",
-                  persona_type: selectedUserType,
-                }),
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error || t("userType.saveFailed"));
-              login({ ...user, persona_type: selectedUserType });
-              navigate("/home");
+              if (user?.id) {
+                const res = await fetch(`${BACKEND_URL}/users/profile`, {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    user_id: user.id,
+                    language_code: selectedLanguageCode || "en",
+                    persona_type: personaToSave,
+                  }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || t("userType.saveFailed"));
+              }
+              login({ ...user, persona_type: personaToSave });
             } catch (err) {
               console.error(err);
+              // Keep onboarding unblocked even if profile patch fails.
+              if (user) login({ ...user, persona_type: personaToSave });
             } finally {
               setIsSubmitting(false);
+              navigate("/home");
             }
           }}
         />

@@ -5,7 +5,7 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from urllib import error as urlerror
 from urllib import request as urlrequest
 
@@ -404,7 +404,7 @@ class RagEngine:
             "fallback_cache_ready": True,
         }
 
-    def _fallback_retrieve(self, query: str, top_k: int, persona_type: str | None, category: str | None) -> list[dict[str, Any]]:
+    def _fallback_retrieve(self, query: str, top_k: int, persona_type: Optional[str], category: Optional[str]) -> list[dict[str, Any]]:
         if not self._fallback_chunks:
             self._fallback_chunks = _dedupe_chunks(self._collect_raw_chunks())
         query_embedding = self._embed_text(query)
@@ -447,9 +447,9 @@ class RagEngine:
     def retrieve(
         self,
         query: str,
-        persona_type: str | None = None,
-        category: str | None = None,
-        language: str | None = "en",
+        persona_type: Optional[str] = None,
+        category: Optional[str] = None,
+        language: Optional[str] = "en",
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         top_k = self.config.rag_top_k
         candidate_count = self.config.rag_candidates
@@ -496,7 +496,7 @@ class RagEngine:
             "retrieval_error": retrieval_error,
         }
 
-    def _build_prompt(self, query: str, persona_type: str | None, screen_context: dict[str, Any] | None, chunks: list[dict[str, Any]]) -> str:
+    def _build_prompt(self, query: str, persona_type: Optional[str], screen_context: Optional[dict[str, Any]], chunks: list[dict[str, Any]]) -> str:
         context_lines = []
         for idx, chunk in enumerate(chunks, start=1):
             snippet = (chunk.get("content") or "").strip()
@@ -587,9 +587,9 @@ class RagEngine:
     def build_chat_response(
         self,
         query: str,
-        language_code: str | None,
-        persona_type: str | None,
-        screen_context: dict[str, Any] | None,
+        language_code: Optional[str],
+        persona_type: Optional[str],
+        screen_context: Optional[dict[str, Any]],
         translate_func,
         request_id: str,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
