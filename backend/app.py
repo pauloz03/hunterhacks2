@@ -1,12 +1,7 @@
 import os
-import json
-import time
-import uuid
-from urllib import parse, request as urlrequest
 from flask import Flask, request, jsonify
 from supabase import create_client
 from dotenv import load_dotenv
-from rag import RagEngine
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -19,7 +14,7 @@ def handle_preflight():
         res = jsonify({})
         res.headers["Access-Control-Allow-Origin"] = "*"
         res.headers["Access-Control-Allow-Headers"] = "Content-Type"
-        res.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
+        res.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
         return res, 200
 
 
@@ -27,7 +22,7 @@ def handle_preflight():
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
     return response
 
 
@@ -38,9 +33,6 @@ if not supabase_url or not supabase_service_key:
     raise RuntimeError("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env")
 
 supabase = create_client(supabase_url, supabase_service_key)
-google_translate_api_key = os.getenv("GOOGLE_TRANSLATE_API_KEY", "").strip()
-translate_cache = {}
-rag_engine = RagEngine(supabase)
 
 
 @app.route("/")
@@ -181,25 +173,6 @@ def logout():
     return jsonify({"message": "Logged out."}), 200
 
 
-@app.route("/resources", methods=["GET"])
-def get_resources():
-    category = request.args.get("category", "").strip()
-
-    try:
-        query = (
-            supabase.table("resources")
-            .select("id,name,category,address,borough,latitude,longitude,phone,website,is_free")
-            .not_.is_("latitude", "null")
-            .not_.is_("longitude", "null")
-        )
-        if category and category != "all":
-            query = query.eq("category", category)
-        result = query.execute()
-        return jsonify({"resources": result.data or []})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
 @app.route("/categories", methods=["GET"])
 def get_categories():
     persona_type = request.args.get("persona_type", "").strip()
@@ -214,235 +187,91 @@ def get_categories():
         return jsonify({"error": str(e)}), 400
 
 
-@app.route("/translate", methods=["POST"])
-def translate_text():
-    if not google_translate_api_key:
-        return jsonify({"error": "GOOGLE_TRANSLATE_API_KEY is missing."}), 500
-
-    body = request.get_json(silent=True) or {}
-    text = body.get("text")
-    target = str(body.get("target", "")).strip()
-    source = str(body.get("source", "")).strip()
-
-    if not isinstance(text, str) or not text.strip():
-        return jsonify({"error": "text must be a non-empty string."}), 400
-    if not target:
-        return jsonify({"error": "target is required."}), 400
-
-    normalized_text = text.strip()
-    cache_key = f"{source or 'auto'}|{target}|{normalized_text}"
-    cached = translate_cache.get(cache_key)
-    if cached is not None:
-        return jsonify({
-            "translatedText": cached["translatedText"],
-            "detectedSource": cached.get("detectedSource"),
-            "target": target,
-            "cached": True,
-        })
-
-    payload = {
-        "q": normalized_text,
-        "target": target,
-        "format": "text",
-    }
-    if source:
-        payload["source"] = source
-
-    endpoint = (
-        "https://translation.googleapis.com/language/translate/v2"
-        f"?key={parse.quote(google_translate_api_key)}"
-    )
-    req = urlrequest.Request(
-        endpoint,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json; charset=utf-8"},
-        method="POST",
-    )
+@app.route("/resources", methods=["GET"])
+def get_resources():
+    category = request.args.get("category", "").strip().lower()
 
     try:
-        with urlrequest.urlopen(req, timeout=10) as response:
-            raw = response.read().decode("utf-8")
-            data = json.loads(raw)
-    except Exception as e:
-        return jsonify({"error": f"Translate request failed: {str(e)}"}), 502
-
-    translated_items = (((data or {}).get("data") or {}).get("translations") or [])
-    if not translated_items:
-        return jsonify({"error": "No translation returned."}), 502
-
-    translated = translated_items[0].get("translatedText")
-    detected_source = translated_items[0].get("detectedSourceLanguage")
-    if not translated:
-        return jsonify({"error": "Translation was empty."}), 502
-
-    result = {
-        "translatedText": translated,
-        "detectedSource": detected_source,
-    }
-    translate_cache[cache_key] = result
-
-    return jsonify({
-        "translatedText": translated,
-        "detectedSource": detected_source,
-        "target": target,
-        "cached": False,
-    })
-
-
-def translate_text_internal(payload):
-    if not google_translate_api_key:
-        return {"translatedText": payload.get("text", ""), "translated": False, "error": "missing_google_translate_key"}
-
-    text = payload.get("text")
-    target = str(payload.get("target", "")).strip()
-    source = str(payload.get("source", "")).strip()
-    if not isinstance(text, str) or not text.strip() or not target:
-        return {"translatedText": text or "", "translated": False, "error": "invalid_payload"}
-
-    normalized_text = text.strip()
-    cache_key = f"{source or 'auto'}|{target}|{normalized_text}"
-    cached = translate_cache.get(cache_key)
-    if cached is not None:
-        return {
-            "translatedText": cached["translatedText"],
-            "detectedSource": cached.get("detectedSource"),
-            "target": target,
-            "translated": True,
-            "cached": True,
-        }
-
-    data = {
-        "q": normalized_text,
-        "target": target,
-        "format": "text",
-    }
-    if source:
-        data["source"] = source
-
-    endpoint = (
-        "https://translation.googleapis.com/language/translate/v2"
-        f"?key={parse.quote(google_translate_api_key)}"
-    )
-    req = urlrequest.Request(
-        endpoint,
-        data=json.dumps(data).encode("utf-8"),
-        headers={"Content-Type": "application/json; charset=utf-8"},
-        method="POST",
-    )
-
-    try:
-        with urlrequest.urlopen(req, timeout=10) as response:
-            raw = response.read().decode("utf-8")
-            result = json.loads(raw)
-    except Exception as exc:
-        return {"translatedText": text, "translated": False, "error": f"translate_request_failed:{str(exc)}"}
-
-    translated_items = (((result or {}).get("data") or {}).get("translations") or [])
-    if not translated_items:
-        return {"translatedText": text, "translated": False, "error": "no_translation_returned"}
-    translated = translated_items[0].get("translatedText")
-    detected_source = translated_items[0].get("detectedSourceLanguage")
-    if not translated:
-        return {"translatedText": text, "translated": False, "error": "translation_empty"}
-    value = {"translatedText": translated, "detectedSource": detected_source}
-    translate_cache[cache_key] = value
-    return {
-        "translatedText": translated,
-        "detectedSource": detected_source,
-        "target": target,
-        "translated": True,
-        "cached": False,
-    }
-
-
-@app.route("/rag/reindex", methods=["POST"])
-def rag_reindex():
-    request_id = str(uuid.uuid4())
-    start = time.time()
-    try:
-        result = rag_engine.reindex()
-        payload = {
-            "request_id": request_id,
-            "message": "RAG index rebuilt.",
-            **result,
-        }
-        print(json.dumps({
-            "event": "rag_reindex",
-            "request_id": request_id,
-            "elapsed_ms": int((time.time() - start) * 1000),
-            "failure_category": None,
-        }))
-        return jsonify(payload)
-    except Exception as exc:
-        print(json.dumps({
-            "event": "rag_reindex",
-            "request_id": request_id,
-            "elapsed_ms": int((time.time() - start) * 1000),
-            "failure_category": "reindex_failed",
-        }))
-        return jsonify({"request_id": request_id, "error": str(exc)}), 500
-
-
-@app.route("/rag/stats", methods=["GET"])
-def rag_stats():
-    request_id = str(uuid.uuid4())
-    try:
-        stats = rag_engine.rag_stats()
-        return jsonify({"request_id": request_id, **stats})
-    except Exception as exc:
-        return jsonify({"request_id": request_id, "error": str(exc)}), 500
-
-
-@app.route("/chat", methods=["POST"])
-def chat():
-    request_id = str(uuid.uuid4())
-    started = time.time()
-    body = request.get_json(silent=True) or {}
-    message = str(body.get("message", "")).strip()
-    language_code = str(body.get("language_code", "")).strip() or "en"
-    persona_type = str(body.get("persona_type", "")).strip() or None
-    screen_context = body.get("screen_context") if isinstance(body.get("screen_context"), dict) else {}
-
-    if not message:
-        return jsonify({"request_id": request_id, "error": "message is required"}), 400
-
-    try:
-        response, logs = rag_engine.build_chat_response(
-            query=message,
-            language_code=language_code,
-            persona_type=persona_type,
-            screen_context=screen_context,
-            translate_func=translate_text_internal,
-            request_id=request_id,
+        query = (
+            supabase.table("resources")
+            .select("id,name,category,address,borough,neighborhood,latitude,longitude,phone,website,is_free")
         )
-        print(json.dumps({
-            "event": "chat",
-            "request_id": request_id,
-            "retrieval_candidate_count": logs.get("retrieval_candidate_count"),
-            "top_chunk_ids": logs.get("top_chunk_ids"),
-            "used_fallback": logs.get("used_fallback"),
-            "retrieval_error": logs.get("retrieval_error"),
-            "retrieval_latency_ms": logs.get("retrieval_latency_ms"),
-            "model_latency_ms": logs.get("model_latency_ms"),
-            "total_latency_ms": logs.get("total_latency_ms"),
-            "failure_category": None,
-        }))
-        return jsonify(response)
-    except Exception as exc:
-        print(json.dumps({
-            "event": "chat",
-            "request_id": request_id,
-            "total_latency_ms": int((time.time() - started) * 1000),
-            "failure_category": "chat_failed",
-        }))
-        return jsonify({
-            "request_id": request_id,
-            "error": str(exc),
-            "answer": "I ran into an issue while preparing a grounded response. Please try again.",
-            "used_language": "en",
-            "citations": [],
-            "actions": [],
-        }), 500
+        if category and category != "all":
+            query = query.eq("category", category)
+        result = query.limit(500).execute()
+        return jsonify({"resources": result.data or []})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/users/saved", methods=["GET"])
+def list_saved_resources():
+    user_id = request.args.get("user_id", "").strip()
+    if not user_id:
+        return jsonify({"error": "user_id is required."}), 400
+
+    try:
+        saved = (
+            supabase.table("saved_resources")
+            .select("resource_id")
+            .eq("user_id", user_id)
+            .execute()
+        )
+        resource_ids = [row.get("resource_id") for row in (saved.data or []) if row.get("resource_id") is not None]
+
+        if not resource_ids:
+            return jsonify({"resources": []})
+
+        resources = (
+            supabase.table("resources")
+            .select("id,name,category,address,borough,neighborhood,latitude,longitude,phone,website,is_free")
+            .in_("id", resource_ids)
+            .execute()
+        )
+        return jsonify({"resources": resources.data or []})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/users/saved", methods=["POST"])
+def save_resource():
+    body = request.get_json() or {}
+    user_id = (body.get("user_id") or "").strip()
+    resource_id = body.get("resource_id")
+
+    if not user_id or resource_id is None:
+        return jsonify({"error": "user_id and resource_id are required."}), 400
+
+    try:
+        supabase.table("saved_resources").upsert(
+            {"user_id": user_id, "resource_id": resource_id},
+            on_conflict="user_id,resource_id",
+        ).execute()
+        return jsonify({"message": "Saved resource."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/users/saved", methods=["DELETE"])
+def unsave_resource():
+    body = request.get_json() or {}
+    user_id = (body.get("user_id") or "").strip()
+    resource_id = body.get("resource_id")
+
+    if not user_id or resource_id is None:
+        return jsonify({"error": "user_id and resource_id are required."}), 400
+
+    try:
+        (
+            supabase.table("saved_resources")
+            .delete()
+            .eq("user_id", user_id)
+            .eq("resource_id", resource_id)
+            .execute()
+        )
+        return jsonify({"message": "Removed saved resource."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":

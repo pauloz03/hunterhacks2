@@ -64,6 +64,7 @@ export default function MapScreen() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [mapError, setMapError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [savedResourceIds, setSavedResourceIds] = useState([]);
 
   // Init map once
   useEffect(() => {
@@ -119,6 +120,49 @@ export default function MapScreen() {
   }, []);
 
   // Fetch + pin resources whenever filter changes (and map is ready)
+  const toggleSaveResource = useCallback(async (resourceId, shouldSave) => {
+    if (!user?.id) {
+      return { ok: false, error: "You need to be signed in to save resources." };
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/saved`, {
+        method: shouldSave ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.id,
+          resource_id: resourceId,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { ok: false, error: data?.error || "Failed to update saved resource." };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Network error while updating saved resource." };
+    }
+  }, [user?.id]);
+
+  const loadSavedResources = useCallback(async () => {
+    if (!user?.id) {
+      setSavedResourceIds([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/saved?user_id=${encodeURIComponent(user.id)}`);
+      const data = await res.json();
+      if (!res.ok) return;
+      const ids = (data.resources || [])
+        .map((r) => String(r.id))
+        .filter((id) => id !== null && id !== undefined);
+      setSavedResourceIds(ids);
+    } catch {
+      // no-op
+    }
+  }, [user?.id]);
+
   const loadResources = useCallback(async (category) => {
     if (!mapRef.current) return;
 
@@ -135,21 +179,84 @@ export default function MapScreen() {
 
       const res = await fetch(url);
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to load map resources.");
+      }
       const resources = data.resources ?? [];
 
       resources.forEach(r => {
+        const resourceId = String(r.id);
         const el = createPinEl(r.category);
+        const popupEl = document.createElement("div");
+        popupEl.style.cssText = "font-family:sans-serif;padding:4px 2px;min-width:220px;";
 
-        const popup = new mapboxgl.Popup({ offset: 28, closeButton: false, maxWidth: "260px" })
-          .setHTML(`
-            <div style="font-family:sans-serif;padding:4px 2px">
-              <p style="margin:0 0 4px;font-weight:700;font-size:13px;color:#111">${r.name}</p>
-              <p style="margin:0 0 4px;font-size:12px;color:#555">${r.address || ""}</p>
-              ${r.phone ? `<p style="margin:0 0 4px;font-size:12px;color:#555">📞 ${r.phone}</p>` : ""}
-              ${r.is_free ? `<span style="font-size:11px;background:#dcfce7;color:#166534;padding:2px 8px;border-radius:99px;font-weight:600">Free</span>` : ""}
-              ${r.website ? `<br/><a href="${r.website}" target="_blank" style="font-size:11px;color:#2563eb;margin-top:4px;display:inline-block">Visit website →</a>` : ""}
-            </div>
-          `);
+        const title = document.createElement("p");
+        title.style.cssText = "margin:0 0 4px;font-weight:700;font-size:13px;color:#111;";
+        title.textContent = r.name || "Resource";
+        popupEl.appendChild(title);
+
+        if (r.address) {
+          const address = document.createElement("p");
+          address.style.cssText = "margin:0 0 4px;font-size:12px;color:#555;";
+          address.textContent = r.address;
+          popupEl.appendChild(address);
+        }
+
+        if (r.phone) {
+          const phone = document.createElement("p");
+          phone.style.cssText = "margin:0 0 6px;font-size:12px;color:#555;";
+          phone.textContent = `📞 ${r.phone}`;
+          popupEl.appendChild(phone);
+        }
+
+        if (r.is_free) {
+          const freeTag = document.createElement("span");
+          freeTag.style.cssText = "font-size:11px;background:#dcfce7;color:#166534;padding:2px 8px;border-radius:99px;font-weight:600;display:inline-block;margin-bottom:6px;";
+          freeTag.textContent = "Free";
+          popupEl.appendChild(freeTag);
+        }
+
+        const actions = document.createElement("div");
+        actions.style.cssText = "display:flex;align-items:center;gap:8px;margin-top:6px;";
+
+        const heartButton = document.createElement("button");
+        heartButton.type = "button";
+        heartButton.style.cssText = "border:0;background:#fff1f2;color:#be123c;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;";
+        const isSavedInitially = savedResourceIds.includes(resourceId);
+        heartButton.textContent = isSavedInitially ? "♥ Saved" : "♡ Save";
+
+        heartButton.addEventListener("click", async () => {
+          const currentlySaved = savedResourceIds.includes(resourceId);
+          const result = await toggleSaveResource(r.id, !currentlySaved);
+          if (!result.ok) {
+            setMapError(result.error || "Failed to update saved resource.");
+            return;
+          }
+          setMapError("");
+
+          setSavedResourceIds((prev) => {
+            const exists = prev.includes(resourceId);
+            const next = exists ? prev.filter((id) => id !== resourceId) : [...prev, resourceId];
+            heartButton.textContent = exists ? "♡ Save" : "♥ Saved";
+            return next;
+          });
+        });
+        actions.appendChild(heartButton);
+
+        if (r.website) {
+          const link = document.createElement("a");
+          link.href = r.website;
+          link.target = "_blank";
+          link.rel = "noreferrer";
+          link.style.cssText = "font-size:11px;color:#2563eb;text-decoration:none;";
+          link.textContent = "Visit website →";
+          actions.appendChild(link);
+        }
+
+        popupEl.appendChild(actions);
+
+        const popup = new mapboxgl.Popup({ offset: 28, closeButton: false, maxWidth: "280px" })
+          .setDOMContent(popupEl);
 
         const marker = new mapboxgl.Marker({ element: el, anchor: "bottom" })
           .setLngLat([parseFloat(r.longitude), parseFloat(r.latitude)])
@@ -158,16 +265,24 @@ export default function MapScreen() {
 
         resourceMarkersRef.current.push(marker);
       });
-    } catch {
-      // silently fail — map still usable
+    } catch (error) {
+      setMapError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load resources. Make sure backend is running.",
+      );
     }
 
     setLoading(false);
-  }, []);
+  }, [savedResourceIds, toggleSaveResource]);
 
   useEffect(() => {
     if (mapReady) loadResources(activeFilter);
   }, [mapReady, activeFilter, loadResources]);
+
+  useEffect(() => {
+    loadSavedResources();
+  }, [loadSavedResources]);
 
   return (
     <main className={`visitor-page visitor-page--${userType} map-screen`}>

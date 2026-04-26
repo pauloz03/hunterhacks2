@@ -17,15 +17,54 @@ const savedItemsByUserType = {
   ],
 };
 
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import VisitorFooterNav from "../components/VisitorFooterNav";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
 export default function SavedScreen() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const persona = user?.persona_type ?? "neighbor";
-  const savedItems = savedItemsByUserType[persona] || savedItemsByUserType.neighbor;
+  const [savedResources, setSavedResources] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSavedResources() {
+      if (!user?.id) {
+        setSavedResources([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const res = await fetch(`${BACKEND_URL}/users/saved?user_id=${encodeURIComponent(user.id)}`);
+        const data = await res.json();
+        if (!cancelled && res.ok) {
+          setSavedResources(data.resources || []);
+        }
+      } catch {
+        if (!cancelled) {
+          setSavedResources([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSavedResources();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  const fallbackItems = savedItemsByUserType[persona] || savedItemsByUserType.neighbor;
 
   return (
     <main className={`visitor-page visitor-page--${persona}`}>
@@ -34,21 +73,41 @@ export default function SavedScreen() {
         <p className="saved-subtitle">{t("saved.subtitle")}</p>
 
         <section className="saved-list" aria-label={t("saved.ariaBookmarked")}>
-          {savedItems.map((item) => (
-            <article key={item.title} className="saved-item-card">
-              <span className="saved-item-icon" aria-hidden>
-                {item.icon}
-              </span>
-              <div className="saved-item-copy">
-                <p className="saved-item-title">{t(`saved.items.title.${item.titleKey}`)}</p>
-                <p className="saved-item-subtitle">{t(`saved.items.subtitle.${item.subtitleKey}`)}</p>
-                <span className="saved-item-type">{t(`saved.items.type.${item.typeKey}`)}</span>
-              </div>
-              <span className="saved-item-bookmark" aria-hidden>
-                ♥
-              </span>
-            </article>
-          ))}
+          {loading ? <p className="saved-item-subtitle">Loading…</p> : null}
+          {!loading && savedResources.length > 0
+            ? savedResources.map((item) => (
+                <article key={item.id} className="saved-item-card">
+                  <span className="saved-item-icon" aria-hidden>
+                    📍
+                  </span>
+                  <div className="saved-item-copy">
+                    <p className="saved-item-title">{item.name}</p>
+                    <p className="saved-item-subtitle">{item.address || item.neighborhood || ""}</p>
+                    <span className="saved-item-type">{item.category || "resource"}</span>
+                  </div>
+                  <span className="saved-item-bookmark" aria-hidden>
+                    ♥
+                  </span>
+                </article>
+              ))
+            : null}
+          {!loading && savedResources.length === 0
+            ? fallbackItems.map((item) => (
+                <article key={item.titleKey} className="saved-item-card">
+                  <span className="saved-item-icon" aria-hidden>
+                    {item.icon}
+                  </span>
+                  <div className="saved-item-copy">
+                    <p className="saved-item-title">{t(`saved.items.title.${item.titleKey}`)}</p>
+                    <p className="saved-item-subtitle">{t(`saved.items.subtitle.${item.subtitleKey}`)}</p>
+                    <span className="saved-item-type">{t(`saved.items.type.${item.typeKey}`)}</span>
+                  </div>
+                  <span className="saved-item-bookmark" aria-hidden>
+                    ♥
+                  </span>
+                </article>
+              ))
+            : null}
         </section>
       </section>
 
