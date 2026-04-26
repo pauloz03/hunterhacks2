@@ -1,6 +1,7 @@
 import LandingPage from "./pages/LandingPage";
 import AskScreen from "./screens/Ask";
 import HomeScreen from "./screens/HomeScreen";
+import CategoryScreen from "./screens/CategoryScreen";
 import MapScreen from "./screens/Map";
 import ProfileScreen from "./screens/Profile";
 import SavedScreen from "./screens/Saved";
@@ -17,6 +18,14 @@ export default function App() {
           element={(
             <ProtectedScreen>
               <HomeScreen />
+            </ProtectedScreen>
+          )}
+        />
+        <Route
+          path="/category/:slug"
+          element={(
+            <ProtectedScreen>
+              <CategoryScreen />
             </ProtectedScreen>
           )}
         />
