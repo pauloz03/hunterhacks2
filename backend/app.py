@@ -173,25 +173,6 @@ def logout():
     return jsonify({"message": "Logged out."}), 200
 
 
-@app.route("/resources", methods=["GET"])
-def get_resources():
-    category = request.args.get("category", "").strip()
-
-    try:
-        query = (
-            supabase.table("resources")
-            .select("id,name,category,address,borough,latitude,longitude,phone,website,is_free")
-            .not_.is_("latitude", "null")
-            .not_.is_("longitude", "null")
-        )
-        if category and category != "all":
-            query = query.eq("category", category)
-        result = query.execute()
-        return jsonify({"resources": result.data or []})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
 @app.route("/resources/search", methods=["GET"])
 def search_resources():
     q = request.args.get("q", "").strip()
