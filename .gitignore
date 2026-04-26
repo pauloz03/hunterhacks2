@@ -7,5 +7,6 @@ my-app/dist/
 my-app/.vite/
 
 backend/venv/
+backend/.venv/
 __pycache__/
 *.pyc

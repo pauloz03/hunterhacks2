@@ -1,9 +1,12 @@
 import os
 import json
+import time
+import uuid
 from urllib import parse, request as urlrequest
 from flask import Flask, request, jsonify
 from supabase import create_client
 from dotenv import load_dotenv
+from rag import RagEngine
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -37,6 +40,7 @@ if not supabase_url or not supabase_service_key:
 supabase = create_client(supabase_url, supabase_service_key)
 google_translate_api_key = os.getenv("GOOGLE_TRANSLATE_API_KEY", "").strip()
 translate_cache = {}
+rag_engine = RagEngine(supabase)
 
 
 @app.route("/")
@@ -283,6 +287,162 @@ def translate_text():
         "target": target,
         "cached": False,
     })
+
+
+def translate_text_internal(payload):
+    if not google_translate_api_key:
+        return {"translatedText": payload.get("text", ""), "translated": False, "error": "missing_google_translate_key"}
+
+    text = payload.get("text")
+    target = str(payload.get("target", "")).strip()
+    source = str(payload.get("source", "")).strip()
+    if not isinstance(text, str) or not text.strip() or not target:
+        return {"translatedText": text or "", "translated": False, "error": "invalid_payload"}
+
+    normalized_text = text.strip()
+    cache_key = f"{source or 'auto'}|{target}|{normalized_text}"
+    cached = translate_cache.get(cache_key)
+    if cached is not None:
+        return {
+            "translatedText": cached["translatedText"],
+            "detectedSource": cached.get("detectedSource"),
+            "target": target,
+            "translated": True,
+            "cached": True,
+        }
+
+    data = {
+        "q": normalized_text,
+        "target": target,
+        "format": "text",
+    }
+    if source:
+        data["source"] = source
+
+    endpoint = (
+        "https://translation.googleapis.com/language/translate/v2"
+        f"?key={parse.quote(google_translate_api_key)}"
+    )
+    req = urlrequest.Request(
+        endpoint,
+        data=json.dumps(data).encode("utf-8"),
+        headers={"Content-Type": "application/json; charset=utf-8"},
+        method="POST",
+    )
+
+    try:
+        with urlrequest.urlopen(req, timeout=10) as response:
+            raw = response.read().decode("utf-8")
+            result = json.loads(raw)
+    except Exception as exc:
+        return {"translatedText": text, "translated": False, "error": f"translate_request_failed:{str(exc)}"}
+
+    translated_items = (((result or {}).get("data") or {}).get("translations") or [])
+    if not translated_items:
+        return {"translatedText": text, "translated": False, "error": "no_translation_returned"}
+    translated = translated_items[0].get("translatedText")
+    detected_source = translated_items[0].get("detectedSourceLanguage")
+    if not translated:
+        return {"translatedText": text, "translated": False, "error": "translation_empty"}
+    value = {"translatedText": translated, "detectedSource": detected_source}
+    translate_cache[cache_key] = value
+    return {
+        "translatedText": translated,
+        "detectedSource": detected_source,
+        "target": target,
+        "translated": True,
+        "cached": False,
+    }
+
+
+@app.route("/rag/reindex", methods=["POST"])
+def rag_reindex():
+    request_id = str(uuid.uuid4())
+    start = time.time()
+    try:
+        result = rag_engine.reindex()
+        payload = {
+            "request_id": request_id,
+            "message": "RAG index rebuilt.",
+            **result,
+        }
+        print(json.dumps({
+            "event": "rag_reindex",
+            "request_id": request_id,
+            "elapsed_ms": int((time.time() - start) * 1000),
+            "failure_category": None,
+        }))
+        return jsonify(payload)
+    except Exception as exc:
+        print(json.dumps({
+            "event": "rag_reindex",
+            "request_id": request_id,
+            "elapsed_ms": int((time.time() - start) * 1000),
+            "failure_category": "reindex_failed",
+        }))
+        return jsonify({"request_id": request_id, "error": str(exc)}), 500
+
+
+@app.route("/rag/stats", methods=["GET"])
+def rag_stats():
+    request_id = str(uuid.uuid4())
+    try:
+        stats = rag_engine.rag_stats()
+        return jsonify({"request_id": request_id, **stats})
+    except Exception as exc:
+        return jsonify({"request_id": request_id, "error": str(exc)}), 500
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    request_id = str(uuid.uuid4())
+    started = time.time()
+    body = request.get_json(silent=True) or {}
+    message = str(body.get("message", "")).strip()
+    language_code = str(body.get("language_code", "")).strip() or "en"
+    persona_type = str(body.get("persona_type", "")).strip() or None
+    screen_context = body.get("screen_context") if isinstance(body.get("screen_context"), dict) else {}
+
+    if not message:
+        return jsonify({"request_id": request_id, "error": "message is required"}), 400
+
+    try:
+        response, logs = rag_engine.build_chat_response(
+            query=message,
+            language_code=language_code,
+            persona_type=persona_type,
+            screen_context=screen_context,
+            translate_func=translate_text_internal,
+            request_id=request_id,
+        )
+        print(json.dumps({
+            "event": "chat",
+            "request_id": request_id,
+            "retrieval_candidate_count": logs.get("retrieval_candidate_count"),
+            "top_chunk_ids": logs.get("top_chunk_ids"),
+            "used_fallback": logs.get("used_fallback"),
+            "retrieval_error": logs.get("retrieval_error"),
+            "retrieval_latency_ms": logs.get("retrieval_latency_ms"),
+            "model_latency_ms": logs.get("model_latency_ms"),
+            "total_latency_ms": logs.get("total_latency_ms"),
+            "failure_category": None,
+        }))
+        return jsonify(response)
+    except Exception as exc:
+        print(json.dumps({
+            "event": "chat",
+            "request_id": request_id,
+            "total_latency_ms": int((time.time() - started) * 1000),
+            "failure_category": "chat_failed",
+        }))
+        return jsonify({
+            "request_id": request_id,
+            "error": str(exc),
+            "answer": "I ran into an issue while preparing a grounded response. Please try again.",
+            "used_language": "en",
+            "citations": [],
+            "actions": [],
+        }), 500
 
 
 if __name__ == "__main__":

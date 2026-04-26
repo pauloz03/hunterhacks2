@@ -1,48 +1,129 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeExternalLinks from "rehype-external-links";
 import VisitorFooterNav from "../components/VisitorFooterNav";
-import { translateText } from "../lib/translateClient";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+function linkifyPlainUrls(text) {
+  if (!text) return "";
+  return text.replace(/(^|[\s(])((https?:\/\/[^\s)]+))/gi, (match, prefix, url) => `${prefix}[${url}](${url})`);
+}
+
+function AssistantMessage({ text }) {
+  const markdown = linkifyPlainUrls(text || "");
+  return (
+    <div className="ask-message-markdown">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[
+          rehypeSanitize,
+          [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
+        ]}
+      >
+        {markdown}
+      </ReactMarkdown>
+    </div>
+  );
+}
 
 export default function AskScreen() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const persona = user?.persona_type ?? "neighbor";
-  const [translatedAssistant1, setTranslatedAssistant1] = useState(t("ask.sample.assistant1"));
-  const [translatedAssistant2, setTranslatedAssistant2] = useState(t("ask.sample.assistant2"));
-  const [showAutoTranslatedLabel, setShowAutoTranslatedLabel] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      id: "seed-assistant",
+      role: "assistant",
+      text: t("ask.sample.assistant1"),
+      shortText: t("ask.sample.assistant1"),
+      citations: [],
+      actions: [],
+      resourceCards: [],
+    },
+  ]);
+  const [isSending, setIsSending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const target = user?.language_code || i18n.language || "en";
-    const localLanguage = (i18n.resolvedLanguage || i18n.language || "en").split("-")[0];
-    const targetLanguage = target.split("-")[0];
+  const targetLanguage = useMemo(
+    () => (user?.language_code || i18n.resolvedLanguage || i18n.language || "en").split("-")[0],
+    [user?.language_code, i18n.resolvedLanguage, i18n.language]
+  );
 
-    const assistant1 = t("ask.sample.assistant1");
-    const assistant2 = t("ask.sample.assistant2");
+  async function sendMessage(rawPrompt) {
+    const prompt = rawPrompt.trim();
+    if (!prompt || isSending) return;
+    const userMessage = { id: `user-${Date.now()}`, role: "user", text: prompt };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setErrorMessage("");
+    setIsSending(true);
 
-    if (targetLanguage === localLanguage) {
-      setTranslatedAssistant1(assistant1);
-      setTranslatedAssistant2(assistant2);
-      setShowAutoTranslatedLabel(false);
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: prompt,
+          language_code: targetLanguage,
+          persona_type: persona,
+          screen_context: { screen: "ask" },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "chat_request_failed");
+      }
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `assistant-${Date.now()}`,
+          role: "assistant",
+          text: data?.answer || t("common.tryAgain", { defaultValue: "Please try again." }),
+          shortText:
+            data?.answer_short ||
+            data?.answer ||
+            t("common.tryAgain", { defaultValue: "Please try again." }),
+          citations: data?.citations || [],
+          actions: data?.actions || [],
+          resourceCards: data?.resource_cards || [],
+        },
+      ]);
+    } catch (error) {
+      setErrorMessage(
+        t("ask.error", {
+          defaultValue: "I couldn't fetch an answer right now. Please try again.",
+        })
+      );
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  function handleAction(action) {
+    if (!action?.type) return;
+    if (action.type === "open_category" && action.route) {
+      window.open(action.route, "_blank", "noopener,noreferrer");
       return;
     }
-
-    let cancelled = false;
-    (async () => {
-      const [first, second] = await Promise.all([
-        translateText({ text: assistant1, target: targetLanguage }),
-        translateText({ text: assistant2, target: targetLanguage }),
-      ]);
-      if (cancelled) return;
-      setTranslatedAssistant1(first.translatedText || assistant1);
-      setTranslatedAssistant2(second.translatedText || assistant2);
-      setShowAutoTranslatedLabel(Boolean(first.translated || second.translated));
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [t, i18n.language, i18n.resolvedLanguage, user?.language_code]);
+    if (action.type === "open_map") {
+      window.open(action.route || "/map", "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (action.type === "open_resource_link" && action.route) {
+      window.open(action.route, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (action.type === "call_hotline") {
+      const phone = action?.params?.phone || action?.label || "";
+      if (phone) window.location.href = `tel:${phone}`;
+    }
+  }
 
   return (
     <main className={`visitor-page visitor-page--${persona}`}>
@@ -50,38 +131,119 @@ export default function AskScreen() {
         <header className="ask-header">
           <h1 className="ask-title">{t("ask.title")}</h1>
           <p className="ask-subtitle">{t("ask.subtitle")}</p>
-          {showAutoTranslatedLabel ? (
-            <p className="ask-translated-indicator">{t("common.autoTranslated", { defaultValue: "Auto-translated" })}</p>
-          ) : null}
+          <p className="ask-translated-indicator">{t("common.autoTranslated", { defaultValue: "Auto-translated" })}</p>
         </header>
 
         <section className="ask-chat-card">
           <section className="ask-chat">
-            <article className="ask-bubble ask-bubble-assistant">
-              {translatedAssistant1}
-            </article>
-            <article className="ask-bubble ask-bubble-user">{t("ask.sample.user1")}</article>
-            <article className="ask-bubble ask-bubble-assistant">
-              {translatedAssistant2}
-            </article>
+            {messages.map((msg) => (
+              <article
+                key={msg.id}
+                className={`ask-bubble ${msg.role === "assistant" ? "ask-bubble-assistant" : "ask-bubble-user"}`}
+              >
+                {msg.role === "assistant" ? (
+                  <AssistantMessage text={msg.text || msg.shortText} />
+                ) : (
+                  <p className="ask-message-text">{msg.text}</p>
+                )}
+                {msg.role === "assistant" && (msg.resourceCards || []).length > 0 ? (
+                  <div className="ask-resource-cards">
+                    {(msg.resourceCards || []).map((card, index) => (
+                      <article key={`${msg.id}-card-${index}`} className="ask-resource-card">
+                        <p className="ask-resource-title">{card.title}</p>
+                        {card.snippet ? <p className="ask-resource-snippet">{card.snippet}</p> : null}
+                        {card.url ? (
+                          <button
+                            type="button"
+                            className="ask-resource-open"
+                            onClick={() =>
+                              handleAction({ type: "open_resource_link", route: card.url, label: "Open resource" })
+                            }
+                          >
+                            {t("ask.openResource", { defaultValue: "Open resource" })}
+                          </button>
+                        ) : null}
+                      </article>
+                    ))}
+                  </div>
+                ) : null}
+                {msg.role === "assistant" && (msg.citations || []).length > 0 ? (
+                  <div className="ask-citations">
+                    {(msg.citations || []).slice(0, 4).map((citation) => (
+                      <a
+                        key={citation.id}
+                        className="ask-citation-link"
+                        href={citation.url || "#"}
+                        target={citation.url ? "_blank" : undefined}
+                        rel={citation.url ? "noopener noreferrer" : undefined}
+                        onClick={(event) => {
+                          if (!citation.url) event.preventDefault();
+                        }}
+                      >
+                        {citation.title || t("ask.source", { defaultValue: "Source" })}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+                {msg.role === "assistant" && (msg.actions || []).length > 0 ? (
+                  <div className="ask-actions">
+                    {(msg.actions || []).map((action, index) => (
+                      <button
+                        key={`${msg.id}-action-${index}`}
+                        type="button"
+                        className="ask-action"
+                        onClick={() => handleAction(action)}
+                      >
+                        {action.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            ))}
+            {isSending ? (
+              <article className="ask-bubble ask-bubble-assistant">
+                {t("common.loading", { defaultValue: "Loading..." })}
+              </article>
+            ) : null}
           </section>
         </section>
 
+        {errorMessage ? <p className="ask-error">{errorMessage}</p> : null}
+
         <div className="ask-quick-prompts" aria-label={t("ask.suggestedPromptsAria")}>
-          <button type="button" className="ask-chip">
+          <button type="button" className="ask-chip" onClick={() => sendMessage(t("ask.promptFood"))}>
             {t("ask.promptFood")}
           </button>
-          <button type="button" className="ask-chip">
+          <button type="button" className="ask-chip" onClick={() => sendMessage(t("ask.promptClinic"))}>
             {t("ask.promptClinic")}
           </button>
-          <button type="button" className="ask-chip">
+          <button type="button" className="ask-chip" onClick={() => sendMessage(t("ask.promptHousing"))}>
             {t("ask.promptHousing")}
           </button>
         </div>
 
         <div className="ask-input-wrap">
-          <input className="ask-input" placeholder={t("ask.inputPlaceholder")} />
-          <button type="button" className="ask-send-button" aria-label={t("ask.sendAria")}>
+          <input
+            className="ask-input"
+            placeholder={t("ask.inputPlaceholder")}
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage(input);
+              }
+            }}
+            disabled={isSending}
+          />
+          <button
+            type="button"
+            className="ask-send-button"
+            aria-label={t("ask.sendAria")}
+            onClick={() => sendMessage(input)}
+            disabled={isSending}
+          >
             ↑
           </button>
         </div>
