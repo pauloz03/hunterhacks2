@@ -5,6 +5,7 @@ import { geolocationService } from "../services/geolocationService";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import VisitorFooterNav from "../components/VisitorFooterNav";
+import MapSearchBar from "../components/MapSearchBar";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -59,6 +60,7 @@ export default function MapScreen() {
   const mapRef = useRef(null);
   const userMarkerRef = useRef(null);
   const resourceMarkersRef = useRef([]);
+  const searchPopupRef = useRef(null);
 
   const [mapReady, setMapReady] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -284,6 +286,35 @@ export default function MapScreen() {
     loadSavedResources();
   }, [loadSavedResources]);
 
+  function handleSearchSelect(resource) {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const lng = parseFloat(resource.longitude);
+    const lat = parseFloat(resource.latitude);
+    if (isNaN(lng) || isNaN(lat)) return;
+
+    if (searchPopupRef.current) {
+      searchPopupRef.current.remove();
+      searchPopupRef.current = null;
+    }
+
+    map.flyTo({ center: [lng, lat], zoom: 16, essential: true });
+
+    searchPopupRef.current = new mapboxgl.Popup({ offset: 28, closeButton: true, maxWidth: "260px" })
+      .setLngLat([lng, lat])
+      .setHTML(`
+        <div style="font-family:sans-serif;padding:4px 2px">
+          <p style="margin:0 0 4px;font-weight:700;font-size:13px;color:#111">${resource.name}</p>
+          <p style="margin:0 0 4px;font-size:12px;color:#555">${resource.address || ""}</p>
+          ${resource.phone ? `<p style="margin:0;font-size:12px;color:#555">📞 ${resource.phone}</p>` : ""}
+          ${resource.is_free ? `<span style="font-size:11px;background:#dcfce7;color:#166534;padding:2px 8px;border-radius:99px;font-weight:600">Free</span>` : ""}
+          ${resource.website ? `<br/><a href="${resource.website}" target="_blank" style="font-size:11px;color:#2563eb;margin-top:4px;display:inline-block">Visit website →</a>` : ""}
+        </div>
+      `)
+      .addTo(map);
+  }
+
   return (
     <main className={`visitor-page visitor-page--${userType} map-screen`}>
       <div ref={mapContainerRef} className="map-container" />
@@ -291,10 +322,7 @@ export default function MapScreen() {
       <section className="map-content map-overlay">
         <h1 className="map-title">{t("map.title")}</h1>
 
-        <div className="map-search">
-          <span className="map-search-icon">⌕</span>
-          <span className="map-search-placeholder">{t("map.searchPlaceholder")}</span>
-        </div>
+        <MapSearchBar onSelectResult={handleSearchSelect} />
 
         <div className="map-filters">
           {FILTERS.map(f => (
