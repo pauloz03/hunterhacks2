@@ -6,27 +6,99 @@ import VisitorFooterNav from "../components/VisitorFooterNav";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
-const ALL_CATEGORIES = [
-  { id: "transit",      slug: "transit",      label: "Transit",      icon: "🚇", description: "Subway, bus, and getting around NYC" },
-  { id: "health",       slug: "health",       label: "Health",       icon: "🏥", description: "Clinics, hospitals, and health services" },
-  { id: "banking",      slug: "banking",      label: "Banking",      icon: "🏦", description: "Bank accounts, credit, and financial help" },
-  { id: "community",    slug: "community",    label: "Community",    icon: "🤝", description: "Local events, groups, and neighbors" },
-  { id: "emergency",    slug: "emergency",    label: "Emergency",    icon: "🚨", description: "Emergency services and crisis support" },
-  { id: "food",         slug: "food",         label: "Food",         icon: "🍽️", description: "Food pantries, benefits, and resources" },
-  { id: "school",       slug: "school",       label: "School",       icon: "📚", description: "Schools, enrollment, and education" },
-  { id: "housing",      slug: "housing",      label: "Housing",      icon: "🏠", description: "Shelter, rentals, and housing assistance" },
-  { id: "legal-rights", slug: "legal-rights", label: "Legal Rights", icon: "⚖️", description: "Know your rights and legal aid" },
-  { id: "work",         slug: "work",         label: "Work",         icon: "💼", description: "Jobs, permits, and employment support" },
+const EXTRA_SERVICES = [
+  { icon: "🗺️", navKey: "map", route: "/map" },
+  { icon: "💬", navKey: "ask", route: "/ask" },
 ];
 
-const PERSONA_ORDER = {
-  visitor:   ["transit", "health", "banking", "community", "emergency"],
-  neighbor:  ["community", "transit", "food", "school", "housing", "banking", "health", "emergency"],
-  immigrant: ["health", "food", "legal-rights", "school", "housing", "work", "banking", "transit", "community", "emergency"],
-  refugee:   ["emergency", "food", "health", "legal-rights", "housing", "community", "banking", "transit", "school", "work"],
-  student:   ["housing", "banking", "work", "transit", "health", "community", "emergency"],
-};
+function formatSlug(slug) {
+  return slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 
+const moreModalStyles = `
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes slideDown {
+    from { transform: translateY(0); }
+    to   { transform: translateY(100%); }
+  }
+`;
+
+function MoreModal({ onClose, navigate, categories, t }) {
+  const [closing, setClosing] = useState(false);
+
+  function handleClose() {
+    setClosing(true);
+    setTimeout(onClose, 300);
+  }
+
+  const allServices = [
+    ...categories.map(cat => ({
+      icon: cat.icon,
+      label: t(`home.categoryLabel.${cat.slug}`, { defaultValue: formatSlug(cat.slug) }),
+      action: () => navigate(`/category/${cat.slug}`, { state: { cat } }),
+    })),
+    ...EXTRA_SERVICES.map(s => ({
+      icon: s.icon,
+      label: t(`nav.${s.navKey}`, { defaultValue: formatSlug(s.navKey) }),
+      action: () => navigate(s.route),
+    })),
+  ];
+
+  return (
+    <>
+      <style>{moreModalStyles}</style>
+      <div style={{
+        position: "fixed", inset: 0, background: "#f7f8f6",
+        zIndex: 1000, display: "flex", flexDirection: "column",
+        animation: `${closing ? "slideDown" : "slideUp"} 0.32s cubic-bezier(0.32,0.72,0,1) ${closing ? "forwards" : ""}`,
+      }}>
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "20px 20px 16px", borderBottom: "1px solid #ebebeb",
+          background: "#fff",
+        }}>
+          <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: "#1a1a1a" }}>
+            {t("home.allServices", { defaultValue: "All services" })}
+          </h2>
+          <button
+            onClick={handleClose}
+            style={{
+              background: "#ebebeb", border: "none", borderRadius: "50%",
+              width: 32, height: 32, cursor: "pointer", fontSize: 18,
+              display: "flex", alignItems: "center", justifyContent: "center", color: "#555",
+            }}
+          >×</button>
+        </div>
+
+        {/* Service list */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {allServices.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => { handleClose(); setTimeout(s.action, 300); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 14,
+                background: "#fff", border: "none", borderRadius: 14,
+                padding: "14px 16px", cursor: "pointer", textAlign: "left",
+                width: "100%", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              }}
+            >
+              <span style={{ fontSize: 26 }}>{s.icon}</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{s.label}</span>
+              <span style={{ marginLeft: "auto", color: "#aaa", fontSize: 18 }}>›</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Main screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -34,6 +106,7 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState([]);
   const [personaType, setPersonaType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -42,24 +115,18 @@ export default function HomeScreen() {
     setPersonaType(persona);
 
     async function load() {
-      let cats = [];
       try {
         const res = await fetch(`${BACKEND_URL}/categories?persona_type=${persona}`);
         const data = await res.json();
-        if (res.ok) cats = data.categories ?? [];
+        if (res.ok) {
+          const cats = (data.categories ?? []).sort(
+            (a, b) => (a.priority_order ?? 0) - (b.priority_order ?? 0)
+          );
+          setCategories(cats);
+        }
       } catch {
-        // backend unreachable — fall through to local fallback
+        // backend unreachable
       }
-
-      const order = PERSONA_ORDER[persona] ?? [];
-      const source = cats.length > 0 ? cats : ALL_CATEGORIES.filter((c) => order.includes(c.slug));
-      const sorted = source.sort((a, b) => {
-        const ai = order.indexOf(a.slug);
-        const bi = order.indexOf(b.slug);
-        return (ai === -1 ? order.length : ai) - (bi === -1 ? order.length : bi);
-      });
-
-      setCategories(sorted);
       setLoading(false);
     }
 
@@ -91,9 +158,7 @@ export default function HomeScreen() {
         <header className="visitor-header">
           <p className="visitor-date">{today.toUpperCase()}</p>
           <h1 className="visitor-title">
-            {greetingLine1}
-            <br />
-            {greetingLine2}
+            {greetingLine1}<br />{greetingLine2}
           </h1>
           <span className="visitor-role-pill">● {t(`home.persona.${persona}`, { defaultValue: t("home.persona.neighbor") })}</span>
         </header>
@@ -114,24 +179,73 @@ export default function HomeScreen() {
           ) : categories.length === 0 ? (
             <p style={{ color: "#7d7672" }}>{t("home.noResources")}</p>
           ) : (
-            <div className="visitor-list">
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "20px 8px",
+              padding: "4px 2px",
+            }}>
               {categories.map((cat) => (
-                <article key={cat.id} className="visitor-item-card">
-                  <span className="visitor-item-icon-wrap" aria-hidden>
-                    <span className="visitor-item-icon">{cat.icon}</span>
-                  </span>
-                  <div className="visitor-item-copy">
-                    <p className="visitor-item-title">{t(`home.categoryLabel.${cat.slug}`, { defaultValue: cat.slug })}</p>
+                <button
+                  key={cat.id ?? cat.slug}
+                  onClick={() => navigate(`/category/${cat.slug}`, { state: { cat } })}
+                  style={{
+                    background: "none", border: "none", padding: 0,
+                    cursor: "pointer", display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 6,
+                  }}
+                >
+                  <div style={{
+                    width: 60, height: 60, borderRadius: 16,
+                    background: "var(--persona-soft-bg, #e8f4f0)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 28, boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                  }}>
+                    {cat.icon}
                   </div>
-                  <span className="visitor-bookmark" aria-hidden>♡</span>
-                </article>
+                  <span style={{
+                    fontSize: 11, fontWeight: 500, color: "#333",
+                    textAlign: "center", lineHeight: 1.3,
+                    wordBreak: "break-word",
+                  }}>
+                    {t(`home.categoryLabel.${cat.slug}`, { defaultValue: formatSlug(cat.slug) })}
+                  </span>
+                </button>
               ))}
+
+              {/* More button */}
+              <button
+                onClick={() => setShowMore(true)}
+                style={{
+                  background: "none", border: "none", padding: 0,
+                  cursor: "pointer", display: "flex", flexDirection: "column",
+                  alignItems: "center", gap: 6,
+                }}
+              >
+                <div style={{
+                  width: 60, height: 60, borderRadius: 16,
+                  background: "var(--persona-soft-bg, #e8f4f0)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 22, boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                  letterSpacing: 2, color: "#555",
+                }}>
+                  •••
+                </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 500, color: "#333",
+                  textAlign: "center", lineHeight: 1.3,
+                }}>
+                  {t("home.more", { defaultValue: "More" })}
+                </span>
+              </button>
             </div>
           )}
         </section>
       </section>
 
       <VisitorFooterNav />
+
+      {showMore && <MoreModal onClose={() => setShowMore(false)} navigate={navigate} categories={categories} t={t} />}
     </main>
   );
 }

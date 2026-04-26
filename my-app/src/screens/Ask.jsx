@@ -55,14 +55,16 @@ export default function AskScreen() {
           ) : null}
         </header>
 
-        <section className="ask-chat">
-          <article className="ask-bubble ask-bubble-assistant">
-            {translatedAssistant1}
-          </article>
-          <article className="ask-bubble ask-bubble-user">{t("ask.sample.user1")}</article>
-          <article className="ask-bubble ask-bubble-assistant">
-            {translatedAssistant2}
-          </article>
+        <section className="ask-chat-card">
+          <section className="ask-chat">
+            <article className="ask-bubble ask-bubble-assistant">
+              {translatedAssistant1}
+            </article>
+            <article className="ask-bubble ask-bubble-user">{t("ask.sample.user1")}</article>
+            <article className="ask-bubble ask-bubble-assistant">
+              {translatedAssistant2}
+            </article>
+          </section>
         </section>
 
         <div className="ask-quick-prompts" aria-label={t("ask.suggestedPromptsAria")}>

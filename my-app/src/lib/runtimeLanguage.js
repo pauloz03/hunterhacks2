@@ -8,6 +8,7 @@ const RUNTIME_TRANSLATION_NAMESPACES = [
   "userType",
   "common",
   "home",
+  "category",
   "map",
   "saved",
   "profile",

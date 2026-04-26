@@ -87,6 +87,8 @@ const resources = {
         aiAssistantLabel: "AI ASSISTANT",
         learnMore: "Learn more",
         forYou: "FOR YOU",
+        allServices: "All services",
+        more: "More",
         noResources: "No resources found.",
         categoryLabel: {
           transit: "Getting Around",
@@ -121,6 +123,13 @@ const resources = {
           refugee: "Nearby services for housing, legal support, and food are available now.",
           student: "Housing resources and campus services for students are listed below.",
         },
+      },
+      category: {
+        guideLabel: "Guide",
+        readTime: "{{time}} read",
+        proTip: "Pro tip",
+        noGuides: "No guides available yet.",
+        translatingList: "Translating topics...",
       },
       map: {
         title: "Nearby resources",
