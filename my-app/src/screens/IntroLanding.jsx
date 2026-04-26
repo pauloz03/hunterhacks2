@@ -1,7 +1,22 @@
+import landedBackgroundVideo from "../../assets/images/Landedbg.mp4";
+
 export default function IntroLanding({ languages, copy, onGetStarted }) {
   return (
     <main className="page intro-page">
       <section className="intro-content">
+        <video
+          className="intro-bg-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        >
+          <source src={landedBackgroundVideo} type="video/mp4" />
+        </video>
+        <div className="intro-bg-overlay" aria-hidden="true" />
+
         <article className="floating-card card-transit">
           <span className="floating-icon" aria-hidden>
             🚇
