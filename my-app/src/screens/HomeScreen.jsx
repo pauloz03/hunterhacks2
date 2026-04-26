@@ -7,6 +7,28 @@ import guideData from "./guideData.json";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
+const PERSONA_ORDER = {
+  visitor:   ["transit", "health", "banking", "community", "emergency"],
+  neighbor:  ["community", "transit", "food", "school", "housing", "banking", "health", "emergency"],
+  immigrant: ["health", "food", "legal-rights", "school", "housing", "work", "banking", "transit", "community", "emergency"],
+  refugee:   ["emergency", "food", "health", "legal-rights", "housing", "community", "banking", "transit", "school", "work"],
+  student:   ["housing", "banking", "work", "transit", "health", "community", "emergency"],
+  familiar:  ["community", "transit", "food", "housing", "banking", "health", "emergency"],
+};
+
+const ALL_CATEGORIES = [
+  { id: "transit",       slug: "transit",       icon: "🚇" },
+  { id: "health",        slug: "health",        icon: "🏥" },
+  { id: "banking",       slug: "banking",       icon: "🏦" },
+  { id: "community",     slug: "community",     icon: "🤝" },
+  { id: "emergency",     slug: "emergency",     icon: "🚨" },
+  { id: "food",          slug: "food",          icon: "🍽️" },
+  { id: "school",        slug: "school",        icon: "📚" },
+  { id: "housing",       slug: "housing",       icon: "🏠" },
+  { id: "legal-rights",  slug: "legal-rights",  icon: "⚖️" },
+  { id: "work",          slug: "work",          icon: "💼" },
+];
+
 const EXTRA_SERVICES = [
   { icon: "🗺️", navKey: "map", route: "/map" },
   { icon: "💬", navKey: "ask", route: "/ask" },
@@ -282,18 +304,31 @@ export default function HomeScreen() {
     const categoriesPersona = persona === "familiar" ? "neighbor" : persona;
 
     async function load() {
+      const order = PERSONA_ORDER[persona] ?? PERSONA_ORDER.neighbor;
+
+      function sortByPersona(cats) {
+        return [...cats].sort((a, b) => {
+          const ai = order.indexOf(a.slug);
+          const bi = order.indexOf(b.slug);
+          return (ai === -1 ? order.length : ai) - (bi === -1 ? order.length : bi);
+        });
+      }
+
       try {
         const res = await fetch(`${BACKEND_URL}/categories?persona_type=${categoriesPersona}`);
         const data = await res.json();
-        if (res.ok) {
-          const cats = (data.categories ?? []).sort(
-            (a, b) => (a.priority_order ?? 0) - (b.priority_order ?? 0)
-          );
-          setCategories(cats);
+        if (res.ok && (data.categories ?? []).length > 0) {
+          setCategories(sortByPersona(data.categories));
+          setLoading(false);
+          return;
         }
       } catch {
-        // backend unreachable
+        // backend unreachable — fall through to local fallback
       }
+
+      // Fallback: hardcoded categories filtered and ordered by persona
+      const fallback = ALL_CATEGORIES.filter((c) => order.includes(c.slug));
+      setCategories(sortByPersona(fallback));
       setLoading(false);
     }
 
@@ -435,7 +470,7 @@ export default function HomeScreen() {
         <MoreModal
           onClose={() => setShowMore(false)}
           navigate={navigate}
-          categories={categories}
+          categories={ALL_CATEGORIES}
           t={t}
           onCategorySelect={(cat) => {
             setShowMore(false);
