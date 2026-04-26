@@ -1,0 +1,596 @@
+{
+  "categories": [
+    {
+      "id": "getting-around",
+      "title": "Getting Around",
+      "icon": "🚇",
+      "topics": [
+        {
+          "id": "metrocard",
+          "title": "How to get a MetroCard (and Fair Fares discount)",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Find a MetroCard machine", "detail": "Available at every subway station near the entrance turnstiles. Look for the yellow vending machines." },
+            { "title": "Choose your card type", "detail": "Select Pay-Per-Ride (most flexible, $33 for a new card) or Unlimited (7-day for $34, 30-day for $132)." },
+            { "title": "Add money & pay", "detail": "Minimum $5.50 to start. Pay with cash, debit, or credit card. You get $0.65 bonus credit when adding $5.50+." },
+            { "title": "Apply for Fair Fares (if eligible)", "detail": "If your household income is at or below 200% of the federal poverty line, you qualify for 50% off fares. Apply at nyc.gov/fairfares or any HRA office — no immigration status required." },
+            { "title": "Swipe or tap to ride", "detail": "Swipe your card at the turnstile. Or use OMNY (tap with contactless card or phone) and get free transfers within 2 hours." }
+          ],
+          "tip": "You can reload your MetroCard at any station machine, at mta.info, or at many bodegas and pharmacies across the city.",
+          "tags": ["No ID required", "Free transfers", "All boroughs"]
+        },
+        {
+          "id": "subway-bus-basics",
+          "title": "Subway and bus basics, how to read a map",
+          "readTime": "6 min",
+          "steps": [
+            { "title": "Understand the subway map", "detail": "Each colored line has a letter or number. Local trains stop at every station; express trains skip some. The map is available free at any station booth or at mta.info." },
+            { "title": "Entering the subway", "detail": "Swipe or tap your MetroCard at the turnstile. If it says 'Insufficient Fare', add more money. Make sure you enter through the correct direction gate." },
+            { "title": "Riding the bus", "detail": "Board from the front, swipe or tap your MetroCard, or pay $2.90 in exact coins. You can transfer free between subway and bus within 2 hours using the same card." },
+            { "title": "Know your stop", "detail": "Listen for the conductor's announcement or watch the digital signs inside the car. Each station's name is also posted on the platform pillars." },
+            { "title": "Night service", "detail": "Subway runs 24/7. Some lines run less frequently after midnight — check the MTA app or mta.info for late-night schedules." }
+          ],
+          "tip": "Download the MTA app or use Google Maps (select 'Transit' mode) for real-time arrival times and step-by-step directions.",
+          "tags": ["24/7 service", "Free transfer", "Accessible stations"]
+        },
+        {
+          "id": "citi-bike-ferries",
+          "title": "Citi Bike, ferries, and walking routes",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Citi Bike basics", "detail": "NYC's bike share program. Find docks using the Citi Bike app. A single ride is $4.49 for 30 min, or $15/month for unlimited 30-min rides. Electric bikes cost a bit more." },
+            { "title": "Renting a Citi Bike", "detail": "At any dock, use the Citi Bike app or tap your credit/debit card on the dock screen. Unlock a bike and return it to any dock when done." },
+            { "title": "NYC Ferry", "detail": "Ferries connect Manhattan, Brooklyn, Queens, and the Bronx. The fare is $2.90 (same as subway). Buy tickets on the NYC Ferry app or at the dock terminal before boarding." },
+            { "title": "Walking routes", "detail": "Google Maps and Apple Maps both give walking directions in NYC. For pedestrian-friendly routes, the city also has free walking maps at most visitor centers." }
+          ],
+          "tip": "Citi Bike has reduced-membership ($5/month) for people receiving certain city benefits like SNAP. Apply at citibikenyc.com/pricing.",
+          "tags": ["Eco-friendly", "No license needed", "Scenic routes"]
+        },
+        {
+          "id": "google-maps-nyc",
+          "title": "How to use Google Maps in NYC",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Download Google Maps", "detail": "Free on iPhone (App Store) and Android (Google Play). It works in English and many other languages — change language in your phone settings." },
+            { "title": "Enter your destination", "detail": "Tap the search bar and type your destination. You can search in your own language — Google Maps understands many languages and translates automatically." },
+            { "title": "Choose transit mode", "detail": "Tap the transit icon (bus symbol) to see subway, bus, and walking options with estimated travel time and step-by-step directions." },
+            { "title": "Download offline maps", "detail": "To use maps without internet, search your neighborhood, tap the name at the bottom, then tap Download. This is useful when you have limited data." }
+          ],
+          "tip": "You can say 'Hey Google, navigate to [destination]' out loud if you have Google Assistant — no need to type.",
+          "tags": ["Free app", "Works offline", "Multilingual"]
+        }
+      ]
+    },
+    {
+      "id": "finding-a-doctor",
+      "title": "Finding a Doctor",
+      "icon": "🏥",
+      "topics": [
+        {
+          "id": "health-insurance",
+          "title": "How NYC health insurance works (Medicaid, NYC Care)",
+          "readTime": "6 min",
+          "steps": [
+            { "title": "Understand your options", "detail": "If you have low income, you may qualify for Medicaid (free or low-cost health insurance). If you are not eligible for Medicaid, NYC Care is a low-cost program for all NYC residents regardless of immigration status." },
+            { "title": "Apply for Medicaid", "detail": "Apply online at nystateofhealth.ny.gov, by phone at 1-855-355-5777, or in person at your local Department of Social Services office. You'll need proof of income and NYC residency." },
+            { "title": "Sign up for NYC Care", "detail": "If you don't qualify for Medicaid, enroll in NYC Care at nyccare.nyc or call 646-NYC-CARE. There are no eligibility requirements based on immigration status." },
+            { "title": "Use your coverage", "detail": "Once enrolled, you get a membership card. Bring it to any participating doctor, clinic, or hospital. Copays are very low or free depending on your plan." }
+          ],
+          "tip": "NYC Care enrollment is open to all NYC residents regardless of immigration status, income, or employment. You will not be reported to immigration authorities for applying.",
+          "tags": ["No status required", "Low cost", "All boroughs"]
+        },
+        {
+          "id": "doctor-language",
+          "title": "How to find a doctor who speaks your language",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Ask your insurance provider", "detail": "Call the number on your insurance card and ask for a doctor who speaks your language. Medicaid plans are required to provide language assistance." },
+            { "title": "Use NYC Health + Hospitals", "detail": "The public hospital system (nyc.gov/health) offers interpreter services in over 200 languages at all locations. You do not need to speak English to be seen." },
+            { "title": "Search online directories", "detail": "Websites like ZocDoc and Healthgrades let you filter doctors by language spoken. Search your language + 'doctor near me NYC'." },
+            { "title": "Request an interpreter", "detail": "Any federally funded healthcare provider must provide a free interpreter. You can request one when you call to make your appointment." }
+          ],
+          "tip": "You have the legal right to an interpreter at any medical appointment at no cost to you. Never be afraid to ask.",
+          "tags": ["200+ languages", "Free interpreters", "Your right"]
+        },
+        {
+          "id": "er-vs-urgent-care",
+          "title": "ER vs. urgent care vs. clinic — when to go where",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Go to the ER for emergencies", "detail": "Chest pain, difficulty breathing, stroke symptoms, severe bleeding, broken bones, or anything life-threatening. ERs are open 24/7 and must treat you regardless of ability to pay or immigration status." },
+            { "title": "Go to urgent care for non-emergencies", "detail": "Fever, minor cuts, infections, sprains, rashes, or anything that needs same-day care but isn't life-threatening. Usually faster and cheaper than the ER. No appointment needed." },
+            { "title": "Go to a clinic for routine care", "detail": "Regular checkups, prescriptions, chronic conditions, mental health, or follow-up visits. Community health centers (FQHCs) offer sliding-scale fees based on income." },
+            { "title": "Call 311 if unsure", "detail": "NYC's 311 helpline can direct you to the right facility near you and assist in multiple languages." }
+          ],
+          "tip": "ERs cannot turn you away due to inability to pay or immigration status under federal law (EMTALA). You can always apply for financial assistance afterward.",
+          "tags": ["24/7 ER", "Sliding scale fees", "No status required"]
+        },
+        {
+          "id": "free-health-clinics",
+          "title": "Free and low-cost health clinics by neighborhood",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Find a community health center (FQHC)", "detail": "Federally Qualified Health Centers serve everyone regardless of ability to pay or immigration status. Find one near you at findahealthcenter.hrsa.gov." },
+            { "title": "NYC Health + Hospitals clinics", "detail": "The city runs 11 hospitals and 70+ community clinics. Visit nyc.gov/health or call 1-844-NYC-4NYC to find a location near you." },
+            { "title": "Free clinics", "detail": "Many nonprofits offer completely free care. Search 'free clinic [your neighborhood] NYC' or call 311 to get a referral." },
+            { "title": "Bring what you have", "detail": "Bring any ID you have (passport, consulate ID, IDNYC), insurance card if you have one, and a list of any medications you take. You won't be turned away without ID." }
+          ],
+          "tip": "IDNYC, New York City's free municipal ID card, is accepted at all NYC Health + Hospitals locations and can help you access services more easily.",
+          "tags": ["Free care available", "All neighborhoods", "No ID required"]
+        }
+      ]
+    },
+    {
+      "id": "enrolling-kids",
+      "title": "Enrolling Kids in School",
+      "icon": "🎓",
+      "topics": [
+        {
+          "id": "how-schools-work",
+          "title": "How NYC public schools work",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Free public education for all", "detail": "All children ages 5–21 are entitled to a free public education in NYC, regardless of immigration status. This is guaranteed by federal law." },
+            { "title": "School grades overview", "detail": "Elementary school covers grades K–5 (ages 5–10), middle school grades 6–8 (ages 11–13), and high school grades 9–12 (ages 14–18)." },
+            { "title": "Zoned schools", "detail": "Most elementary and middle schools are assigned based on your home address. You are guaranteed a spot at your zoned school. High school requires an application process." },
+            { "title": "School year", "detail": "The school year runs from September to late June. Schools are closed on major holidays and have a winter and spring break." }
+          ],
+          "tip": "Even if you are between homes or in a shelter, your children have the right to stay enrolled in their current school or enroll in a school near your temporary address.",
+          "tags": ["Free", "All children", "Regardless of status"]
+        },
+        {
+          "id": "how-to-enroll",
+          "title": "How to enroll (documents needed, where to go)",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Find your zoned school", "detail": "Go to myschools.nyc and enter your address to find your zoned school. You can also call 311 and say 'enroll my child in school'." },
+            { "title": "Gather documents", "detail": "Bring proof of your child's age (birth certificate, passport, or baptismal record), proof of address (lease, utility bill, or shelter letter), and immunization records if you have them." },
+            { "title": "Visit the school or enrollment office", "detail": "Go to the school directly or visit a Family Welcome Center. Staff can help you in multiple languages. Find centers at schools.nyc.gov/enrollment." },
+            { "title": "No documents? Still enroll.", "detail": "Schools cannot deny enrollment because you lack documents. If you don't have everything, enrollment can begin immediately while you gather records." }
+          ],
+          "tip": "The NYC DOE has Family Welcome Centers in every borough with multilingual staff to help you through the enrollment process at no cost.",
+          "tags": ["No status required", "Multilingual help", "Free enrollment"]
+        },
+        {
+          "id": "prek-3k",
+          "title": "Free pre-K and 3-K programs",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "What is 3-K and pre-K?", "detail": "3-K is free full-day school for 3-year-olds. Pre-K is free full-day school for 4-year-olds. Both are available to all NYC children regardless of income or immigration status." },
+            { "title": "Find a program", "detail": "Search for programs at myschools.nyc/en/programs/3-k and myschools.nyc/en/programs/pre-k. You can filter by neighborhood, language of instruction, and schedule." },
+            { "title": "Apply during the application period", "detail": "Applications typically open in January for the following September. You can apply to multiple programs and rank your preferences." },
+            { "title": "Late enrollment", "detail": "If you missed the application period, you can still apply. Contact 311 or visit a Family Welcome Center — seats are often available year-round." }
+          ],
+          "tip": "Many pre-K programs offer instruction in languages other than English, including Spanish, Mandarin, Haitian Creole, and more. You can filter by language on the myschools.nyc site.",
+          "tags": ["Free", "Ages 3–4", "All families"]
+        },
+        {
+          "id": "children-rights",
+          "title": "Rights your child has regardless of immigration status",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Right to enroll", "detail": "Under the federal Supreme Court case Plyler v. Doe (1982), all children have the right to a free public education regardless of immigration status. No school can ask about your status." },
+            { "title": "Right to stay enrolled if homeless", "detail": "The McKinney-Vento Act guarantees that children experiencing homelessness can stay in their current school even if they move to a shelter or different neighborhood." },
+            { "title": "Schools cannot ask about status", "detail": "Schools are not allowed to ask about citizenship or immigration status during enrollment or at any other time. You are not required to provide a Social Security number." },
+            { "title": "Right to services", "detail": "Children with disabilities are entitled to special education services. English Language Learner (ELL) programs are available at most schools for children learning English." }
+          ],
+          "tip": "If a school denies enrollment or asks about immigration status, call the NYC DOE Office of Family Engagement at 212-374-4118 or contact a legal aid organization.",
+          "tags": ["Federal law", "Regardless of status", "Free services"]
+        }
+      ]
+    },
+    {
+      "id": "finding-food",
+      "title": "Finding Food",
+      "icon": "🍎",
+      "topics": [
+        {
+          "id": "snap",
+          "title": "How to apply for SNAP (food stamps)",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Check eligibility", "detail": "SNAP is based on household income and size. Most households earning up to 130% of the federal poverty line qualify. Some immigration statuses qualify; others may not — legal aid can help clarify." },
+            { "title": "Apply online", "detail": "Apply at mybenefits.ny.gov or in person at your local HRA Benefits Access Center. Applications are available in multiple languages." },
+            { "title": "Attend your interview", "detail": "After applying, you'll have a phone or in-person interview. Bring proof of identity, address, income, and household size." },
+            { "title": "Receive your EBT card", "detail": "If approved, you'll get an EBT (Electronic Benefits Transfer) card that works like a debit card at most grocery stores, bodegas, and farmers markets." }
+          ],
+          "tip": "Even if you don't qualify for SNAP, NYC has emergency food programs for everyone. Call 311 or visit a food pantry in your neighborhood.",
+          "tags": ["Income-based", "EBT card", "Multilingual help"]
+        },
+        {
+          "id": "food-pantries",
+          "title": "Food pantries and community fridges by neighborhood",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Find a food pantry", "detail": "Go to foodpantries.org or call 311 and ask for 'food pantry near me'. Pantries are open to anyone in need — no ID or documentation required at most locations." },
+            { "title": "Community fridges", "detail": "NYC has dozens of community fridges (public refrigerators stocked by volunteers) across all boroughs. Find the nearest one at hvproject.org/fridges." },
+            { "title": "City Harvest and food banks", "detail": "City Harvest distributes food at partner agencies across the city. Find a location at cityharvest.org/food-distribution." },
+            { "title": "What to bring", "detail": "Most pantries require no paperwork. Some ask for a name or zip code. Bring bags or a cart to carry your food home." }
+          ],
+          "tip": "Food pantries never ask about immigration status. You will not be reported for using food assistance services.",
+          "tags": ["No ID needed", "Free", "All boroughs"]
+        },
+        {
+          "id": "cultural-food",
+          "title": "Halal, kosher, vegetarian, and culturally specific food sources",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Halal food", "detail": "Halal grocery stores and butchers are widespread in neighborhoods like Jackson Heights (Queens), Bay Ridge (Brooklyn), and the Bronx. Look for the 'Halal' sign or search 'halal market near me'." },
+            { "title": "Kosher food", "detail": "Kosher supermarkets and delis are concentrated in neighborhoods like Borough Park, Crown Heights (Brooklyn), and the Upper West Side (Manhattan). Look for the kosher certification symbol (OU, OK, Star-K)." },
+            { "title": "Vegetarian and vegan", "detail": "Most grocery stores carry vegetarian options. Neighborhoods like the East Village and Williamsburg have many vegetarian and vegan specialty stores." },
+            { "title": "International markets", "detail": "NYC has grocery stores for nearly every cuisine — Chinese, South Asian, West African, Caribbean, Latin American, and more. Search your cuisine + 'grocery store NYC'." }
+          ],
+          "tip": "Many food pantries can accommodate dietary restrictions. When you arrive, let staff know your needs and they will try to provide appropriate items.",
+          "tags": ["All dietary needs", "Every borough", "Affordable options"]
+        },
+        {
+          "id": "affordable-groceries",
+          "title": "Community markets and affordable grocery stores",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Affordable grocery chains", "detail": "Key Food, Compare Foods, Associated Food Stores, Bravo Supermarkets, and C-Town are budget-friendly grocery chains throughout the city. Avoid bodegas for large shopping — prices are higher." },
+            { "title": "Farmers markets", "detail": "NYC Greenmarkets offer fresh produce citywide. Many accept EBT/SNAP and offer Health Bucks — $2 coupons for every $5 in SNAP spent. Find markets at grownyc.org/greenmarket." },
+            { "title": "Dollar stores", "detail": "Dollar Tree and Family Dollar carry non-perishable food items, cleaning supplies, and household basics at low prices across all boroughs." },
+            { "title": "Food co-ops", "detail": "Food co-ops like the Park Slope Food Coop offer lower prices in exchange for a few hours of work per month. Open to anyone willing to participate." }
+          ],
+          "tip": "Health Bucks are free coupons that double your SNAP spending at NYC Greenmarkets. You get $2 in Health Bucks for every $5 you spend with your EBT card.",
+          "tags": ["EBT accepted", "Fresh produce", "Budget-friendly"]
+        }
+      ]
+    },
+    {
+      "id": "finding-work",
+      "title": "Finding Work",
+      "icon": "💼",
+      "topics": [
+        {
+          "id": "job-search",
+          "title": "How to look for jobs in NYC",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Online job boards", "detail": "Indeed, LinkedIn, ZipRecruiter, and Craigslist (use carefully) list thousands of NYC jobs. Search by neighborhood, industry, or language." },
+            { "title": "NYC workforce centers", "detail": "NYC's free Workforce1 Career Centers offer job placement, resume help, and interview coaching. Find a center at nyc.gov/workforce1 or call 311." },
+            { "title": "Community organizations", "detail": "Many immigrant-serving nonprofits have job placement programs. Organizations like Make the Road NY, AAFE, and BronxWorks connect people with employers." },
+            { "title": "Day labor and gig work", "detail": "Construction, delivery, cleaning, and caregiving jobs are often available quickly. Use apps like TaskRabbit, Instawork, or ask at local worker centers." }
+          ],
+          "tip": "You have the right to be paid at least $16/hour in NYC regardless of your immigration status. If an employer pays less, you can file a complaint with no immigration consequences.",
+          "tags": ["Free help", "All industries", "Any status"]
+        },
+        {
+          "id": "worker-rights",
+          "title": "Worker rights and protections (regardless of status)",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Minimum wage", "detail": "NYC's minimum wage is $16/hour (2024). Your employer must pay you at least this amount, regardless of your immigration status or how you were hired." },
+            { "title": "Paid sick leave", "detail": "Most NYC workers are entitled to up to 56 hours (7 days) of paid sick leave per year. This applies regardless of documentation status." },
+            { "title": "Right to be paid", "detail": "If your employer owes you wages, you can file a complaint with the NYC Department of Consumer and Worker Protection (DCWP) at nyc.gov/workers. Your immigration status will not be shared." },
+            { "title": "Protection from retaliation", "detail": "It is illegal for employers to threaten to call immigration authorities as a response to a worker asserting their rights. This is a form of illegal retaliation." }
+          ],
+          "tip": "The NYC Mayor's Office of Immigrant Affairs (MOIA) can connect you with free legal help if you experience wage theft or workplace discrimination. Call 311 and ask for MOIA.",
+          "tags": ["Any status", "Free legal help", "Protected rights"]
+        },
+        {
+          "id": "job-training",
+          "title": "Free job training programs",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "CUNY Workforce programs", "detail": "The City University of New York offers free and low-cost training in healthcare, tech, construction, and more. Visit cuny.edu/workforce or call a local CUNY campus." },
+            { "title": "Workforce1 training", "detail": "NYC's Workforce1 Career Centers offer free industry-specific training programs. Training is available in multiple languages for many programs." },
+            { "title": "Trade apprenticeships", "detail": "Union apprenticeships in construction, electrical, plumbing, and other trades offer paid training. Contact the relevant union or visit the NYC Building Trades Council." },
+            { "title": "English language classes", "detail": "Free English classes are available citywide through the NYC Department of Education's ESOL program. Find classes at schools.nyc.gov/learning/programs/adult-literacy." }
+          ],
+          "tip": "Many training programs provide a stipend or childcare assistance while you complete the program. Ask about support services when you enroll.",
+          "tags": ["Free", "Multilingual", "Paid apprenticeships"]
+        },
+        {
+          "id": "work-scams",
+          "title": "How to avoid work scams targeting immigrants",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Too good to be true", "detail": "Jobs offering very high pay for simple work, or that promise a visa or green card in exchange for work, are almost always scams. Legitimate employers cannot promise immigration benefits." },
+            { "title": "Never pay to get a job", "detail": "Legitimate employers never charge a fee to apply or get hired. If someone asks for money upfront for a job, it is a scam." },
+            { "title": "Get everything in writing", "detail": "Before starting work, ask for a written contract or job offer that states your pay rate, hours, and job duties. Keep a copy for yourself." },
+            { "title": "Report scams", "detail": "Report job scams to the NYC Department of Consumer and Worker Protection at nyc.gov/consumers or call 311. You can report anonymously." }
+          ],
+          "tip": "If a recruiter or employer asks for your passport or immigration documents as collateral or threatens to keep them, this is illegal. Contact a legal aid organization immediately.",
+          "tags": ["Stay safe", "Know your rights", "Report safely"]
+        }
+      ]
+    },
+    {
+      "id": "housing-basics",
+      "title": "Housing Basics",
+      "icon": "🏠",
+      "topics": [
+        {
+          "id": "renter-rights",
+          "title": "Renter rights in NYC",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Right to a lease", "detail": "You have the right to request a written lease. Always get a lease before paying rent. Read it carefully and keep a copy." },
+            { "title": "Rent stabilization", "detail": "Many NYC apartments are rent-stabilized, meaning your landlord can only raise rent by a small amount each year. Check if your apartment qualifies at hcr.ny.gov." },
+            { "title": "Right to repairs", "detail": "Your landlord must keep your apartment safe and habitable — heat, hot water, and no pests. If repairs are ignored, file a complaint at hpd.nyc.gov or call 311." },
+            { "title": "Protection from illegal eviction", "detail": "A landlord cannot force you out without a court order. Changing locks, removing belongings, or shutting off utilities to pressure you out is illegal." }
+          ],
+          "tip": "You can get free legal help for housing issues regardless of immigration status through the NYC Right to Counsel program. Call 311 or visit evictionfreenyc.org.",
+          "tags": ["Free legal help", "Any status", "Tenant protections"]
+        },
+        {
+          "id": "housing-scams",
+          "title": "How to avoid housing scams",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Never pay before seeing the apartment", "detail": "Always visit an apartment in person before paying any money. Scammers often post fake listings and ask for deposits remotely." },
+            { "title": "Verify the landlord", "detail": "Ask to see the landlord's ID and proof they own or manage the building. You can check property ownership at nyc.gov/acris." },
+            { "title": "Do not overpay fees", "detail": "In NYC, broker fees are no longer required to be paid by tenants for most rentals. If a broker insists you pay a large fee, ask if it is legally required." },
+            { "title": "Get receipts", "detail": "Always get a written receipt for any payment — deposit, first month, last month. Never pay in cash without a receipt." }
+          ],
+          "tip": "If you suspect a housing scam, report it to the NYC Department of Consumer and Worker Protection at nyc.gov/consumers or call 311.",
+          "tags": ["Verify before paying", "Know your fees", "Report scams"]
+        },
+        {
+          "id": "affordable-housing",
+          "title": "Affordable housing programs and lotteries",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "NYC Housing Connect", "detail": "NYC's official affordable housing lottery. Apply at housingconnect.nyc.gov. Listings are open to people of all immigration statuses in many cases — check each listing." },
+            { "title": "NYCHA public housing", "detail": "New York City Housing Authority offers subsidized housing. Waitlists are long, but it's worth applying. Visit nyc.gov/nycha or call 718-707-7771." },
+            { "title": "Section 8 vouchers", "detail": "Federal rental assistance vouchers that pay part of your rent in a private apartment. Apply through NYCHA — the waitlist is long, but keep your application active." },
+            { "title": "Mitchell-Lama housing", "detail": "Affordable co-ops and rentals for moderate-income households. Find open waitlists at nyshcr.org/mitchelllama." }
+          ],
+          "tip": "Sign up for NYC Housing Connect email alerts to be notified when new affordable housing lotteries open in your preferred neighborhoods.",
+          "tags": ["Income-based", "All boroughs", "Free to apply"]
+        },
+        {
+          "id": "emergency-shelter",
+          "title": "Emergency shelter resources",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Call 311 for shelter placement", "detail": "If you need emergency housing tonight, call 311 or go to an intake center. NYC is legally required to provide shelter to anyone who needs it, regardless of immigration status." },
+            { "title": "Family shelters", "detail": "Families with children are housed together in family shelters. Intake is at the Prevention Assistance and Temporary Housing (PATH) office in the Bronx." },
+            { "title": "Single adult shelters", "detail": "Single adults can access shelter through the Department of Homeless Services. Call 311 or visit a drop-in center." },
+            { "title": "Domestic violence shelters", "detail": "If you are fleeing domestic violence, call the NYC Domestic Violence Hotline at 1-800-621-HOPE (4673). Shelters are confidential and available regardless of status." }
+          ],
+          "tip": "NYC's right-to-shelter law means no one can be turned away from emergency shelter. You do not need ID or immigration documents to access emergency shelter.",
+          "tags": ["Legal right", "No ID required", "Confidential"]
+        }
+      ]
+    },
+    {
+      "id": "banking-money",
+      "title": "Banking & Money",
+      "icon": "🏦",
+      "topics": [
+        {
+          "id": "bank-account",
+          "title": "How to open a bank account without a Social Security number",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Use an ITIN instead", "detail": "An Individual Taxpayer Identification Number (ITIN) can be used instead of an SSN to open a bank account at many banks. Apply for an ITIN at irs.gov." },
+            { "title": "Banks that accept foreign passports", "detail": "Many major banks — including Chase, Citibank, and Bank of America — accept a foreign passport + proof of address to open a checking account." },
+            { "title": "Credit unions and community banks", "detail": "Local credit unions like Municipal Credit Union and Quontic Bank are more flexible with documentation. Call ahead to ask what they accept." },
+            { "title": "Bring your documents", "detail": "Bring your passport or consulate ID, a secondary ID if you have one (IDNYC works), and proof of your NYC address (utility bill, lease, or mail)." }
+          ],
+          "tip": "Having a bank account protects your money, helps you build credit, and avoids the high fees charged by check-cashing stores. Even a basic account is worth opening.",
+          "tags": ["No SSN needed", "ITIN accepted", "Build credit"]
+        },
+        {
+          "id": "idnyc",
+          "title": "NYC municipal ID (IDNYC) — what it is and how to get it",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "What is IDNYC?", "detail": "IDNYC is a free government-issued photo ID available to all NYC residents age 10 and older, regardless of immigration status." },
+            { "title": "What you can use it for", "detail": "IDNYC is accepted by NYC agencies, police, banks, libraries, schools, hospitals, and many businesses. It also comes with free benefits like museum memberships." },
+            { "title": "What documents you need", "detail": "You need proof of identity (passport, birth certificate, or other documents) and proof of NYC residency (lease, utility bill, or bank statement). See a full list at nyc.gov/idnyc." },
+            { "title": "How to apply", "detail": "Book an appointment at nyc.gov/idnyc or call 311. Walk-in appointments are also available at many sites. The ID is free and typically issued the same day." }
+          ],
+          "tip": "IDNYC comes with free one-year memberships to dozens of NYC cultural institutions including the Met, MoMA, the Bronx Zoo, and more.",
+          "tags": ["Free", "All residents", "Same-day issuance"]
+        },
+        {
+          "id": "send-money-home",
+          "title": "How to send money home safely and cheaply",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Compare remittance services", "detail": "Use Remitly, Wise (TransferWise), or WorldRemit for competitive exchange rates. Always compare the exchange rate AND fees before sending — both affect the final amount received." },
+            { "title": "Avoid airport and tourist area exchange offices", "detail": "Exchange rates at airports and Times Square kiosks are very poor. Use an app or bank wire instead." },
+            { "title": "Western Union and MoneyGram", "detail": "Available at many pharmacies and check-cashing stores. Convenient but usually more expensive than app-based services. Good for recipients who don't have a bank account." },
+            { "title": "Bank wire transfers", "detail": "If both you and your recipient have bank accounts, international wire transfers can be the cheapest option. Ask your bank about international transfer fees." }
+          ],
+          "tip": "Wise (formerly TransferWise) typically offers the closest to mid-market exchange rates with transparent fees. Always check the rate for the country you're sending to before committing.",
+          "tags": ["Compare rates", "Low fees", "Fast transfers"]
+        },
+        {
+          "id": "predatory-check-cashing",
+          "title": "Avoiding predatory check-cashing places",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "What are check cashers?", "detail": "Check-cashing stores cash your paycheck or money order for a fee — usually 1–3% of the check amount. On a $1,000 check, that is $10–$30 just to access your own money." },
+            { "title": "Use a bank instead", "detail": "With a bank account, you can deposit and cash checks for free. Even basic checking accounts at credit unions often have no monthly fee." },
+            { "title": "Payday loans are dangerous", "detail": "Payday loan stores offer short-term loans with extremely high interest rates — often 300% APR or more. Avoid them. They trap people in cycles of debt." },
+            { "title": "If you must use a check casher", "detail": "Ask about all fees upfront. In NYC, check-cashing fees are regulated by the state — you can check legal maximums at dfs.ny.gov." }
+          ],
+          "tip": "The NYC Financial Empowerment Center offers free, confidential one-on-one financial counseling. Find a center near you at nyc.gov/financialempowerment.",
+          "tags": ["Avoid high fees", "Free counseling", "Build savings"]
+        }
+      ]
+    },
+    {
+      "id": "know-your-rights",
+      "title": "Know Your Rights",
+      "icon": "⚖️",
+      "topics": [
+        {
+          "id": "rights-regardless-of-status",
+          "title": "Rights regardless of immigration status",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Constitutional rights apply to everyone", "detail": "The U.S. Constitution protects everyone in the United States — citizen or not. This includes the right to due process, equal protection, and freedom from unreasonable searches." },
+            { "title": "Right to remain silent", "detail": "You have the right to remain silent with any law enforcement officer. You are not required to answer questions about where you were born, how you entered the U.S., or your immigration status." },
+            { "title": "Right to an attorney", "detail": "If you are arrested or detained, you have the right to speak with a lawyer. In immigration court, you also have the right to an attorney, but the government will not provide one — free legal help is available." },
+            { "title": "Right to refuse a search", "detail": "You can say 'I do not consent to a search.' If an officer searches anyway, do not resist physically — but clearly state your objection, which may help your case later." }
+          ],
+          "tip": "Carry a know-your-rights card in your wallet. You can get one free from organizations like Make the Road NY, NYIC, or by calling 311 and asking for immigrant services.",
+          "tags": ["Constitutional rights", "Any status", "Remain silent"]
+        },
+        {
+          "id": "stopped-by-police",
+          "title": "What to do if stopped by police",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Stay calm and be polite", "detail": "Do not run, argue, or resist — even if you believe you are being treated unfairly. Calmly and clearly state your rights." },
+            { "title": "You can ask if you are free to go", "detail": "Ask clearly: 'Am I being detained, or am I free to go?' If the officer says you are free to go, calmly walk away." },
+            { "title": "If detained, say: I am exercising my right to remain silent", "detail": "You do not have to answer questions beyond providing your name (in some cases). Say clearly: 'I am exercising my right to remain silent. I would like to speak with a lawyer.'" },
+            { "title": "Document everything afterward", "detail": "As soon as you are safe, write down everything you remember: officer's name and badge number, location, time, and what was said. This will help if you need to file a complaint or seek legal help." }
+          ],
+          "tip": "You can file a complaint about police misconduct with the Civilian Complaint Review Board (CCRB) at nyc.gov/ccrb or call 311. Filing a complaint is safe and does not affect your immigration status.",
+          "tags": ["Stay calm", "Know your rights", "Document everything"]
+        },
+        {
+          "id": "ice-rights",
+          "title": "ICE rights and sanctuary city protections",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "NYC is a sanctuary city", "detail": "NYC's Executive Order 41 (and related laws) prohibit city agencies and police from sharing immigration information with ICE in most situations. NYPD generally does not enforce federal immigration law." },
+            { "title": "You do not have to open your door", "detail": "If ICE comes to your home, you do not have to open the door unless they have a judicial warrant signed by a judge. Ask them to slide it under the door. An ICE administrative warrant is not enough." },
+            { "title": "You have the right to remain silent", "detail": "Do not answer questions about your birthplace, how you entered the country, or your immigration status. Say: 'I am exercising my right to remain silent and wish to speak with a lawyer.'" },
+            { "title": "Contact a lawyer immediately", "detail": "If you or someone you know is detained by ICE, call the NYIFUP hotline: 212-440-0800 (for those detained in NY area). Free legal help is available." }
+          ],
+          "tip": "Save the immigration legal help hotline in your phone now: ActionNYC 1-800-354-0365 (free, confidential consultations in multiple languages).",
+          "tags": ["Sanctuary city", "Know your rights", "Free legal help"]
+        },
+        {
+          "id": "free-legal-help",
+          "title": "Free legal help resources",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "ActionNYC", "detail": "Free, safe immigration legal help from trusted community organizations. Call 1-800-354-0365 or visit a site near you. Services in many languages." },
+            { "title": "NYC Bar Association Hotline", "detail": "Call 212-626-7383 for referrals to free or low-cost lawyers for immigration, housing, employment, and more." },
+            { "title": "Legal Aid Society", "detail": "Free legal representation in immigration, housing, family, and criminal matters for low-income New Yorkers. Visit legalaidnyc.org or call 212-577-3300." },
+            { "title": "Know Your Rights workshops", "detail": "Many nonprofits host free know-your-rights workshops in multiple languages. Search 'know your rights workshop NYC [your language]' or call 311." }
+          ],
+          "tip": "All legal aid organizations serve clients regardless of immigration status and are bound by attorney-client confidentiality. They cannot and will not report you to immigration authorities.",
+          "tags": ["Free", "Confidential", "Multilingual"]
+        }
+      ]
+    },
+    {
+      "id": "community",
+      "title": "Community",
+      "icon": "🤝",
+      "topics": [
+        {
+          "id": "community-centers",
+          "title": "Finding community centers and cultural organizations",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "NYC Parks recreation centers", "detail": "Every borough has free or low-cost recreation centers with gyms, classes, and programs. Find yours at nyc.gov/parks or call 311. Membership is $25/year or free with certain benefits." },
+            { "title": "Cultural and ethnic community centers", "detail": "NYC has hundreds of cultural organizations serving specific communities — Chinese, South Asian, West African, Latin American, and more. Search '[your community] community center NYC' or ask at your local library." },
+            { "title": "Public libraries", "detail": "NYC's three library systems (NYPL, Brooklyn, Queens) are free with any ID. They offer classes, events, language learning, job help, and free internet — for everyone." },
+            { "title": "Faith communities", "detail": "Mosques, churches, synagogues, temples, and other faith institutions often run community programs, food pantries, and social services open to the broader community." }
+          ],
+          "tip": "Your local public library branch is one of the best free resources in the city. Library cards are free with any proof of NYC address — even a piece of mail.",
+          "tags": ["Free", "All neighborhoods", "All backgrounds"]
+        },
+        {
+          "id": "english-classes",
+          "title": "Free English classes and language learning",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "NYC DOE adult education (ESOL)", "detail": "Free English for Speakers of Other Languages classes are available citywide through the NYC Department of Education. Find locations at schools.nyc.gov/learning/programs/adult-literacy." },
+            { "title": "Public library classes", "detail": "All three NYC library systems offer free English conversation groups, literacy programs, and online resources like Rosetta Stone — free with your library card." },
+            { "title": "Community organizations", "detail": "Nonprofits like Make the Road NY, BRIC, and many others offer free English classes, often in the evenings and weekends for working adults." },
+            { "title": "Online options", "detail": "Duolingo is free and available in many languages. Khan Academy and ESL-Lab.com also offer free English learning materials online." }
+          ],
+          "tip": "Many English programs offer childcare during class. Ask when you call to enroll — don't let childcare be a barrier to attending.",
+          "tags": ["Free", "All levels", "Flexible schedules"]
+        },
+        {
+          "id": "volunteer-connect",
+          "title": "How to volunteer and connect with neighbors",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "NYC Service", "detail": "NYC's official volunteer matching platform. Browse opportunities by neighborhood, cause, or skill at volunteer.nyc.gov. Available in multiple languages." },
+            { "title": "Neighborhood mutual aid groups", "detail": "Many NYC neighborhoods have mutual aid networks that share food, supplies, and support. Search '[your neighborhood] mutual aid NYC' on Facebook or Instagram." },
+            { "title": "Community boards", "detail": "Each of NYC's 59 community boards holds public meetings where residents can speak and participate in local decisions. Find your board at nyc.gov/communityboards." },
+            { "title": "NextDoor and local apps", "detail": "Apps like Nextdoor and local Facebook groups connect you with neighbors for events, buy-nothing groups, and local news." }
+          ],
+          "tip": "Volunteering is one of the fastest ways to build community, practice English, and make connections that can help with jobs and housing.",
+          "tags": ["Build connections", "Free", "All neighborhoods"]
+        },
+        {
+          "id": "mental-health-community",
+          "title": "Mental health and social support resources",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "NYC Well", "detail": "Free, confidential mental health support available 24/7 by call, text, or chat. Available in over 200 languages. Call 1-888-NYC-WELL (692-9355) or text 'WELL' to 65173." },
+            { "title": "Community health centers", "detail": "FQHCs (federally qualified health centers) offer mental health services on a sliding-scale fee, regardless of insurance or immigration status." },
+            { "title": "Cultural mental health organizations", "detail": "Many organizations offer culturally specific mental health services — in your language and with understanding of your background. Ask at your community center or call 311." },
+            { "title": "Support groups", "detail": "Peer support groups for immigrants, domestic violence survivors, and others are available across the city — often free and multilingual. NYC Well can connect you." }
+          ],
+          "tip": "Seeking mental health support is a sign of strength, not weakness. Your conversations with counselors are confidential and will not be shared with immigration authorities.",
+          "tags": ["24/7 support", "200+ languages", "Confidential"]
+        }
+      ]
+    },
+    {
+      "id": "emergency",
+      "title": "Emergency",
+      "icon": "🚨",
+      "topics": [
+        {
+          "id": "call-911",
+          "title": "When and how to call 911",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "Call 911 for life-threatening emergencies", "detail": "Call 911 for fire, medical emergencies, crimes in progress, or any situation where someone's life is at risk. 911 is free from any phone, including phones without service." },
+            { "title": "You can call in your language", "detail": "911 operators have access to interpreters in over 170 languages. Say your language when the operator answers — they will connect an interpreter within seconds." },
+            { "title": "Immigration status does not matter", "detail": "You will not be asked about your immigration status when calling 911. Emergency responders — police, fire, paramedics — are there to help, not to report you." },
+            { "title": "Call 311 for non-emergencies", "detail": "For noise complaints, city service issues, questions, or non-urgent concerns, call 311. Available 24/7 in over 180 languages." }
+          ],
+          "tip": "Save 911 and 311 in your phone right now. If you are unable to speak when calling 911, stay on the line — dispatchers are trained to send help even without voice communication.",
+          "tags": ["Free call", "170+ languages", "Any phone"]
+        },
+        {
+          "id": "natural-disaster",
+          "title": "What to do in a natural disaster or evacuation",
+          "readTime": "5 min",
+          "steps": [
+            { "title": "Sign up for Notify NYC", "detail": "Get free emergency alerts by text, email, or phone call. Sign up at a.notify.nyc.gov or text 'nyc' to 692-692. Available in multiple languages." },
+            { "title": "Know your evacuation zone", "detail": "NYC has 6 hurricane evacuation zones (A–F). Find your zone at maps.nyc.gov/hurricane. Zone A is highest risk and evacuates first." },
+            { "title": "If ordered to evacuate", "detail": "Go to your designated evacuation center. Bring ID, medications, phone charger, water, and important documents. Evacuation centers do not ask about immigration status." },
+            { "title": "Prepare an emergency kit", "detail": "Keep at home: 3 days of water (1 gallon/person/day), non-perishable food, flashlight, batteries, first aid kit, copies of important documents, and any medications." }
+          ],
+          "tip": "NYC's evacuation centers and emergency services are open to everyone regardless of immigration status. You will not be asked for papers at an emergency shelter.",
+          "tags": ["Free alerts", "All residents", "No status required"]
+        },
+        {
+          "id": "domestic-violence",
+          "title": "Domestic violence — help and resources",
+          "readTime": "4 min",
+          "steps": [
+            { "title": "Call the NYC DV Hotline", "detail": "1-800-621-HOPE (4673) — free, confidential, 24/7, available in multiple languages. They can connect you with shelter, legal help, and counseling." },
+            { "title": "You have the right to safety", "detail": "Domestic violence is a crime regardless of your immigration status, and the abuser's threats to call immigration authorities do not change this. Help is available to you." },
+            { "title": "Immigration protections for DV survivors", "detail": "The Violence Against Women Act (VAWA) allows certain domestic violence survivors to self-petition for immigration status independent of their abuser. A legal aid organization can help." },
+            { "title": "Emergency shelter", "detail": "Confidential DV shelters are available across NYC. Locations are kept private for safety. The hotline will connect you to the nearest available shelter." }
+          ],
+          "tip": "If you are in immediate danger, call 911. If you cannot speak safely, text 911 (available in NYC) or leave the line open so dispatchers can hear and send help.",
+          "tags": ["24/7 hotline", "Confidential", "Any status"]
+        },
+        {
+          "id": "mental-health-crisis",
+          "title": "Mental health crisis resources",
+          "readTime": "3 min",
+          "steps": [
+            { "title": "NYC Well — call or text anytime", "detail": "Free, confidential mental health crisis support 24/7. Call 1-888-NYC-WELL (692-9355), text 'WELL' to 65173, or chat at nycwell.org. Available in 200+ languages." },
+            { "title": "National Suicide Prevention Lifeline", "detail": "Call or text 988 from anywhere in the US. Free, confidential, 24/7. Spanish available by pressing 2. Other languages available through an interpreter." },
+            { "title": "Mobile crisis teams", "detail": "NYC Well can dispatch a mobile mental health team to come to you — trained counselors, not police — in many neighborhoods. Ask when you call." },
+            { "title": "Walk-in crisis centers", "detail": "NYC has psychiatric emergency walk-in clinics where you can get immediate help. NYC Well can direct you to the nearest one open right now." }
+          ],
+          "tip": "If you or someone you know is in immediate danger, call 911. For mental health crises that are urgent but not immediately life-threatening, NYC Well is the right first call.",
+          "tags": ["24/7", "200+ languages", "Free"]
+        }
+      ]
+    }
+  ]
+}
