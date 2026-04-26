@@ -279,10 +279,11 @@ export default function HomeScreen() {
 
     const persona = user.persona_type ?? "neighbor";
     setPersonaType(persona);
+    const categoriesPersona = persona === "familiar" ? "neighbor" : persona;
 
     async function load() {
       try {
-        const res = await fetch(`${BACKEND_URL}/categories?persona_type=${persona}`);
+        const res = await fetch(`${BACKEND_URL}/categories?persona_type=${categoriesPersona}`);
         const data = await res.json();
         if (res.ok) {
           const cats = (data.categories ?? []).sort(
@@ -300,8 +301,13 @@ export default function HomeScreen() {
   }, [user?.id, user?.persona_type]);
 
   const persona = personaType ?? "neighbor";
-  const greetingLine1 = t(`home.greeting.${persona}.line1`, { defaultValue: t("home.greeting.neighbor.line1") });
-  const greetingLine2 = t(`home.greeting.${persona}.line2`, { defaultValue: t("home.greeting.neighbor.line2") });
+  const isFamiliarUser = persona === "familiar";
+  const greetingLine1 = isFamiliarUser
+    ? "Welcome back"
+    : t(`home.greeting.${persona}.line1`, { defaultValue: t("home.greeting.neighbor.line1") });
+  const greetingLine2 = isFamiliarUser
+    ? ""
+    : t(`home.greeting.${persona}.line2`, { defaultValue: t("home.greeting.neighbor.line2") });
   const dateLocale = i18n.resolvedLanguage || i18n.language || "en-US";
   let today = "";
   try {
@@ -319,14 +325,28 @@ export default function HomeScreen() {
   }
 
   return (
-    <main className={`visitor-page visitor-page--${persona}`}>
+    <main
+      className={`visitor-page visitor-page--${persona}`}
+      style={
+        isFamiliarUser
+          ? {
+              "--persona-accent": "#5B4FCF",
+              "--persona-soft-bg": "color-mix(in srgb, #5B4FCF 18%, white)",
+            }
+          : undefined
+      }
+    >
       <section className="visitor-content">
         <header className="visitor-header">
           <p className="visitor-date">{today.toUpperCase()}</p>
           <h1 className="visitor-title">
-            {greetingLine1}<br />{greetingLine2}
+            {greetingLine1}
+            {greetingLine2 ? <br /> : null}
+            {greetingLine2}
           </h1>
-          <span className="visitor-role-pill">● {t(`home.persona.${persona}`, { defaultValue: t("home.persona.neighbor") })}</span>
+          <span className="visitor-role-pill">
+            ● {isFamiliarUser ? "NYC Local" : t(`home.persona.${persona}`, { defaultValue: t("home.persona.neighbor") })}
+          </span>
         </header>
 
         <article className="visitor-ai-card">
