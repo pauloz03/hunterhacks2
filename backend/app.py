@@ -81,9 +81,28 @@ def login():
         session = response.session
 
         persona_type = None
+        display_name = None
         if response.user:
-            profile = supabase.table("users").select("persona_type").eq("id", response.user.id).single().execute()
-            persona_type = (profile.data or {}).get("persona_type")
+            try:
+                profile = (
+                    supabase.table("users")
+                    .select("persona_type,display_name")
+                    .eq("id", response.user.id)
+                    .single()
+                    .execute()
+                )
+                persona_type = (profile.data or {}).get("persona_type")
+                display_name = (profile.data or {}).get("display_name")
+            except Exception:
+                # Backward compatibility for DBs that don't have display_name yet.
+                profile = (
+                    supabase.table("users")
+                    .select("persona_type")
+                    .eq("id", response.user.id)
+                    .single()
+                    .execute()
+                )
+                persona_type = (profile.data or {}).get("persona_type")
 
         return jsonify({
             "message": "Logged in successfully.",
@@ -92,6 +111,7 @@ def login():
                 "id": response.user.id,
                 "email": response.user.email,
                 "persona_type": persona_type,
+                "display_name": display_name,
             } if response.user else None,
         })
     except Exception as e:
@@ -104,14 +124,35 @@ def update_profile():
     user_id = (body or {}).get("user_id")
     language_code = (body or {}).get("language_code")
     persona_type = (body or {}).get("persona_type")
+    display_name = (body or {}).get("display_name")
 
     if not user_id:
         return jsonify({"error": "user_id is required."}), 400
 
     try:
-        supabase.table("users").update(
-            {"language_code": language_code, "persona_type": persona_type}
-        ).eq("id", user_id).execute()
+        updates = {}
+        if language_code is not None:
+            updates["language_code"] = language_code
+        if persona_type is not None:
+            updates["persona_type"] = persona_type
+        include_display_name = display_name is not None
+        if include_display_name:
+            updates["display_name"] = display_name
+
+        if not updates:
+            return jsonify({"error": "No profile fields provided to update."}), 400
+
+        try:
+            supabase.table("users").update(updates).eq("id", user_id).execute()
+        except Exception:
+            # If display_name column doesn't exist yet, retry without it.
+            if include_display_name:
+                updates.pop("display_name", None)
+                if not updates:
+                    return jsonify({"message": "Profile updated."})
+                supabase.table("users").update(updates).eq("id", user_id).execute()
+            else:
+                raise
 
         return jsonify({"message": "Profile updated."})
     except Exception as e:

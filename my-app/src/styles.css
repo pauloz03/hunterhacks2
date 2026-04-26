@@ -1289,6 +1289,134 @@ body {
   cursor: pointer;
 }
 
+.profile-name-form {
+  border: 1px solid #d9ded8;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-name-label {
+  color: #41584c;
+  font-size: clamp(12px, 2.2vw, 14px);
+  font-weight: 700;
+}
+
+.profile-name-input {
+  width: 100%;
+  border: 1px solid #cfd8d0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: clamp(14px, 2.5vw, 17px);
+  color: #21342b;
+  background: #fcfdfc;
+}
+
+.profile-name-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-name-save-button,
+.profile-name-cancel-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-name-save-button {
+  background: var(--persona-accent);
+  color: #f6fbf7;
+}
+
+.profile-name-cancel-button {
+  background: #eef2ee;
+  color: #365042;
+}
+
+.profile-name-save-button:disabled,
+.profile-name-cancel-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.profile-name-error {
+  margin: 0;
+  color: #b03838;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.profile-language-form {
+  border: 1px solid #d9ded8;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-language-label {
+  color: #41584c;
+  font-size: clamp(12px, 2.2vw, 14px);
+  font-weight: 700;
+}
+
+.profile-language-select {
+  width: 100%;
+  border: 1px solid #cfd8d0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: clamp(14px, 2.5vw, 17px);
+  color: #21342b;
+  background: #fcfdfc;
+}
+
+.profile-language-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-language-save-button,
+.profile-language-cancel-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-language-save-button {
+  background: var(--persona-accent);
+  color: #f6fbf7;
+}
+
+.profile-language-cancel-button {
+  background: #eef2ee;
+  color: #365042;
+}
+
+.profile-language-save-button:disabled,
+.profile-language-cancel-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.profile-language-error {
+  margin: 0;
+  color: #b03838;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .profile-list-item--logout {
   border-color: #f5c6c6;
   background: #fff5f5;
