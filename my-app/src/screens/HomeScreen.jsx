@@ -6,8 +6,94 @@ import VisitorFooterNav from "../components/VisitorFooterNav";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
+const EXTRA_SERVICES = [
+  { icon: "🗺️", label: "Maps", route: "/map" },
+  { icon: "💬", label: "Chat", route: "/ask" },
+];
+
 function formatSlug(slug) {
   return slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
+
+const moreModalStyles = `
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes slideDown {
+    from { transform: translateY(0); }
+    to   { transform: translateY(100%); }
+  }
+`;
+
+function MoreModal({ onClose, navigate, categories }) {
+  const [closing, setClosing] = useState(false);
+
+  function handleClose() {
+    setClosing(true);
+    setTimeout(onClose, 300);
+  }
+
+  const allServices = [
+    ...categories.map(cat => ({
+      icon: cat.icon,
+      label: formatSlug(cat.slug),
+      action: () => navigate(`/category/${cat.slug}`, { state: { cat } }),
+    })),
+    ...EXTRA_SERVICES.map(s => ({
+      icon: s.icon,
+      label: s.label,
+      action: () => navigate(s.route),
+    })),
+  ];
+
+  return (
+    <>
+      <style>{moreModalStyles}</style>
+      <div style={{
+        position: "fixed", inset: 0, background: "#f7f8f6",
+        zIndex: 1000, display: "flex", flexDirection: "column",
+        animation: `${closing ? "slideDown" : "slideUp"} 0.32s cubic-bezier(0.32,0.72,0,1) ${closing ? "forwards" : ""}`,
+      }}>
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "20px 20px 16px", borderBottom: "1px solid #ebebeb",
+          background: "#fff",
+        }}>
+          <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: "#1a1a1a" }}>All Services</h2>
+          <button
+            onClick={handleClose}
+            style={{
+              background: "#ebebeb", border: "none", borderRadius: "50%",
+              width: 32, height: 32, cursor: "pointer", fontSize: 18,
+              display: "flex", alignItems: "center", justifyContent: "center", color: "#555",
+            }}
+          >×</button>
+        </div>
+
+        {/* Service list */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {allServices.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => { handleClose(); setTimeout(s.action, 300); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 14,
+                background: "#fff", border: "none", borderRadius: 14,
+                padding: "14px 16px", cursor: "pointer", textAlign: "left",
+                width: "100%", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              }}
+            >
+              <span style={{ fontSize: 26 }}>{s.icon}</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{s.label}</span>
+              <span style={{ marginLeft: "auto", color: "#aaa", fontSize: 18 }}>›</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
 }
 
 // ── Main screen ───────────────────────────────────────────────────────────────
@@ -18,6 +104,7 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState([]);
   const [personaType, setPersonaType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -115,12 +202,40 @@ export default function HomeScreen() {
                   </span>
                 </button>
               ))}
+
+              {/* More button */}
+              <button
+                onClick={() => setShowMore(true)}
+                style={{
+                  background: "none", border: "none", padding: 0,
+                  cursor: "pointer", display: "flex", flexDirection: "column",
+                  alignItems: "center", gap: 6,
+                }}
+              >
+                <div style={{
+                  width: 60, height: 60, borderRadius: 16,
+                  background: "var(--persona-soft-bg, #e8f4f0)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 22, boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                  letterSpacing: 2, color: "#555",
+                }}>
+                  •••
+                </div>
+                <span style={{
+                  fontSize: 11, fontWeight: 500, color: "#333",
+                  textAlign: "center", lineHeight: 1.3,
+                }}>
+                  More
+                </span>
+              </button>
             </div>
           )}
         </section>
       </section>
 
       <VisitorFooterNav />
+
+      {showMore && <MoreModal onClose={() => setShowMore(false)} navigate={navigate} categories={categories} />}
     </main>
   );
 }
