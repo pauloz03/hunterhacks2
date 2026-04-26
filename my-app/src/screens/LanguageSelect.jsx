@@ -1,6 +1,6 @@
 export default function LanguageSelect({
   languages,
-  selectedLanguage,
+  selectedLanguageCode,
   titleLine1,
   titleLine2,
   subtitle,
@@ -30,17 +30,17 @@ export default function LanguageSelect({
 
         <section className="language-grid" aria-label="Language selection">
           {languages.map((language) => {
-            const isActive = selectedLanguage === language.nativeName;
+            const isActive = selectedLanguageCode === language.code;
             return (
               <button
-                key={language.nativeName}
+                key={language.code}
                 type="button"
                 className={`language-card ${isActive ? "active" : ""}`}
                 aria-pressed={isActive}
-                onClick={() => onSelectLanguage(language.nativeName)}
+                onClick={() => onSelectLanguage(language.code)}
               >
-                <span className="native-name">{language.nativeName}</span>
-                <span className="english-name">{language.englishName}</span>
+                <span className="native-name">{language.label}</span>
+                <span className="english-name">{language.nativeName}</span>
               </button>
             );
           })}

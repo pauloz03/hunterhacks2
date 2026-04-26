@@ -18,7 +18,6 @@ const languages = [
   { nativeName: "Français", key: "french", code: "fr" },
   { nativeName: "বাংলা", key: "bengali", code: "bn" },
   { nativeName: "Русский", key: "russian", code: "ru" },
-  { nativeName: "Other", key: "other", code: "en" },
 ];
 
 const userTypes = [
@@ -32,7 +31,7 @@ export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0].nativeName);
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState("en");
   const [selectedUserType, setSelectedUserType] = useState("neighbor");
   const [authMode, setAuthMode] = useState("login");
   const [currentScreen, setCurrentScreen] = useState("intro");
@@ -43,7 +42,7 @@ export default function LandingPage() {
 
   const localizedLanguages = languages.map((language) => ({
     ...language,
-    englishName: t(`languageNames.${language.key}`),
+    label: t(`languageNames.${language.key}`),
   }));
   const localizedUserTypes = userTypes.map((type) => ({
     ...type,
@@ -55,6 +54,7 @@ export default function LandingPage() {
     return (
       <IntroLanding
         languages={localizedLanguages}
+        selectedLanguageCode={selectedLanguageCode}
         copy={{
           brandTitle: t("intro.brandTitle"),
           guidePrefix: t("intro.guidePrefix"),
@@ -69,6 +69,10 @@ export default function LandingPage() {
           floatingEducation: t("intro.floating.education"),
           supportedLanguagesAria: t("intro.supportedLanguagesAria"),
         }}
+        onSelectLanguage={(code) => {
+          setSelectedLanguageCode(code);
+          i18n.changeLanguage(code);
+        }}
         onGetStarted={() => setCurrentScreen("language")}
       />
     );
@@ -77,7 +81,7 @@ export default function LandingPage() {
   if (currentScreen === "auth") {
     return (
       <AuthScreen
-        selectedLanguage={selectedLanguage}
+        selectedLanguage={t(`languageNames.${languages.find((language) => language.code === selectedLanguageCode)?.key || "english"}`)}
         authMode={authMode}
         onSetAuthMode={setAuthMode}
         onBack={() => setCurrentScreen("language")}
@@ -135,7 +139,7 @@ export default function LandingPage() {
           isSubmitting={isSubmitting}
           onContinue={async () => {
             setIsSubmitting(true);
-            const selectedLang = languages.find((l) => l.nativeName === selectedLanguage);
+            const selectedLang = languages.find((l) => l.code === selectedLanguageCode);
             try {
               const res = await fetch(`${BACKEND_URL}/users/profile`, {
                 method: "PATCH",
@@ -164,17 +168,14 @@ export default function LandingPage() {
   return (
     <LanguageSelect
       languages={localizedLanguages}
-      selectedLanguage={selectedLanguage}
+      selectedLanguageCode={selectedLanguageCode}
       titleLine1={t("landing.titleLine1")}
       titleLine2={t("landing.titleLine2")}
       subtitle={t("landing.subtitle")}
       continueLabel={t("landing.continue")}
-      onSelectLanguage={(nativeName) => {
-        const selected = languages.find((language) => language.nativeName === nativeName);
-        setSelectedLanguage(nativeName);
-        if (selected) {
-          i18n.changeLanguage(selected.code);
-        }
+      onSelectLanguage={(code) => {
+        setSelectedLanguageCode(code);
+        i18n.changeLanguage(code);
       }}
       onContinue={() => setCurrentScreen("auth")}
     />

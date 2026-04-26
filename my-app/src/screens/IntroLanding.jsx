@@ -1,4 +1,4 @@
-export default function IntroLanding({ languages, copy, onGetStarted }) {
+export default function IntroLanding({ languages, selectedLanguageCode, copy, onSelectLanguage, onGetStarted }) {
   return (
     <main className="page intro-page">
       <section className="intro-content">
@@ -56,9 +56,15 @@ export default function IntroLanding({ languages, copy, onGetStarted }) {
 
           <div className="intro-language-pills" aria-label={copy.supportedLanguagesAria}>
             {languages.slice(0, 6).map((language) => (
-              <span key={language.nativeName} className="pill">
-                {language.nativeName}
-              </span>
+              <button
+                key={language.code}
+                type="button"
+                className={`pill ${selectedLanguageCode === language.code ? "active" : ""}`}
+                aria-pressed={selectedLanguageCode === language.code}
+                onClick={() => onSelectLanguage(language.code)}
+              >
+                {language.label}
+              </button>
             ))}
           </div>
 
