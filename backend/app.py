@@ -1,4 +1,6 @@
 import os
+import json
+from urllib import parse, request as urlrequest
 from flask import Flask, request, jsonify
 from supabase import create_client
 from dotenv import load_dotenv
@@ -33,6 +35,8 @@ if not supabase_url or not supabase_service_key:
     raise RuntimeError("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env")
 
 supabase = create_client(supabase_url, supabase_service_key)
+google_translate_api_key = os.getenv("GOOGLE_TRANSLATE_API_KEY", "").strip()
+translate_cache = {}
 
 
 @app.route("/")
@@ -144,6 +148,81 @@ def get_categories():
         return jsonify({"categories": result.data or []})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.route("/translate", methods=["POST"])
+def translate_text():
+    if not google_translate_api_key:
+        return jsonify({"error": "GOOGLE_TRANSLATE_API_KEY is missing."}), 500
+
+    body = request.get_json(silent=True) or {}
+    text = body.get("text")
+    target = str(body.get("target", "")).strip()
+    source = str(body.get("source", "")).strip()
+
+    if not isinstance(text, str) or not text.strip():
+        return jsonify({"error": "text must be a non-empty string."}), 400
+    if not target:
+        return jsonify({"error": "target is required."}), 400
+
+    normalized_text = text.strip()
+    cache_key = f"{source or 'auto'}|{target}|{normalized_text}"
+    cached = translate_cache.get(cache_key)
+    if cached is not None:
+        return jsonify({
+            "translatedText": cached["translatedText"],
+            "detectedSource": cached.get("detectedSource"),
+            "target": target,
+            "cached": True,
+        })
+
+    payload = {
+        "q": normalized_text,
+        "target": target,
+        "format": "text",
+    }
+    if source:
+        payload["source"] = source
+
+    endpoint = (
+        "https://translation.googleapis.com/language/translate/v2"
+        f"?key={parse.quote(google_translate_api_key)}"
+    )
+    req = urlrequest.Request(
+        endpoint,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json; charset=utf-8"},
+        method="POST",
+    )
+
+    try:
+        with urlrequest.urlopen(req, timeout=10) as response:
+            raw = response.read().decode("utf-8")
+            data = json.loads(raw)
+    except Exception as e:
+        return jsonify({"error": f"Translate request failed: {str(e)}"}), 502
+
+    translated_items = (((data or {}).get("data") or {}).get("translations") or [])
+    if not translated_items:
+        return jsonify({"error": "No translation returned."}), 502
+
+    translated = translated_items[0].get("translatedText")
+    detected_source = translated_items[0].get("detectedSourceLanguage")
+    if not translated:
+        return jsonify({"error": "Translation was empty."}), 502
+
+    result = {
+        "translatedText": translated,
+        "detectedSource": detected_source,
+    }
+    translate_cache[cache_key] = result
+
+    return jsonify({
+        "translatedText": translated,
+        "detectedSource": detected_source,
+        "target": target,
+        "cached": False,
+    })
 
 
 if __name__ == "__main__":

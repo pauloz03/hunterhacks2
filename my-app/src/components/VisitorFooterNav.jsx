@@ -2,11 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const NAV_ITEMS = [
-  { key: "home", path: "/home", aria: "Home" },
-  { key: "map", path: "/map", aria: "Map" },
-  { key: "ask", path: "/ask", aria: "Ask" },
-  { key: "saved", path: "/saved", aria: "Saved" },
-  { key: "profile", path: "/profile", aria: "Profile" },
+  { key: "home", path: "/home" },
+  { key: "map", path: "/map" },
+  { key: "ask", path: "/ask" },
+  { key: "saved", path: "/saved" },
+  { key: "profile", path: "/profile" },
 ];
 
 export default function VisitorFooterNav() {
@@ -15,7 +15,7 @@ export default function VisitorFooterNav() {
   const navigate = useNavigate();
 
   return (
-    <nav className="visitor-bottom-nav" aria-label="Primary">
+    <nav className="visitor-bottom-nav" aria-label={t("nav.primaryAria", { defaultValue: "Primary" })}>
       {NAV_ITEMS.map((item) => {
         const active = location.pathname === item.path;
         return (
@@ -23,7 +23,7 @@ export default function VisitorFooterNav() {
             <button
               type="button"
               className="visitor-nav-icon-button"
-              aria-label={item.aria}
+              aria-label={t(`nav.${item.key}`)}
               onClick={() => navigate(item.path)}
             >
               {item.key === "home" && (

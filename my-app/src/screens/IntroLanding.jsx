@@ -1,7 +1,29 @@
-export default function IntroLanding({ languages, selectedLanguageCode, copy, onSelectLanguage, onGetStarted }) {
+import landedBackgroundVideo from "../../assets/images/Landedbg.mp4";
+
+export default function IntroLanding({
+  languages,
+  selectedLanguageCode,
+  copy,
+  onSelectLanguage,
+  onGetStarted,
+  languagePickerModal,
+}) {
   return (
     <main className="page intro-page">
       <section className="intro-content">
+        <video
+          className="intro-bg-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        >
+          <source src={landedBackgroundVideo} type="video/mp4" />
+        </video>
+        <div className="intro-bg-overlay" aria-hidden="true" />
+
         <article className="floating-card card-transit">
           <span className="floating-icon" aria-hidden>
             🚇
@@ -55,7 +77,7 @@ export default function IntroLanding({ languages, selectedLanguageCode, copy, on
           </p>
 
           <div className="intro-language-pills" aria-label={copy.supportedLanguagesAria}>
-            {languages.slice(0, 6).map((language) => (
+            {languages.map((language) => (
               <button
                 key={language.code}
                 type="button"
@@ -73,6 +95,7 @@ export default function IntroLanding({ languages, selectedLanguageCode, copy, on
           </button>
         </section>
       </section>
+      {languagePickerModal}
     </main>
   );
 }

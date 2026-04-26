@@ -69,20 +69,21 @@ export default function HomeScreen() {
   const persona = personaType ?? "neighbor";
   const greetingLine1 = t(`home.greeting.${persona}.line1`, { defaultValue: t("home.greeting.neighbor.line1") });
   const greetingLine2 = t(`home.greeting.${persona}.line2`, { defaultValue: t("home.greeting.neighbor.line2") });
-  const localeMap = {
-    en: "en-US",
-    es: "es-ES",
-    zh: "zh-CN",
-    ar: "ar",
-    fr: "fr-FR",
-    bn: "bn-BD",
-    ru: "ru-RU",
-  };
-  const today = new Date().toLocaleDateString(localeMap[i18n.language] || "en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+  const dateLocale = i18n.resolvedLanguage || i18n.language || "en-US";
+  let today = "";
+  try {
+    today = new Intl.DateTimeFormat(dateLocale, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+  } catch {
+    today = new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+  }
 
   return (
     <main className={`visitor-page visitor-page--${persona}`}>

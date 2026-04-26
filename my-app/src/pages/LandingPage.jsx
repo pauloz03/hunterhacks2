@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import AuthScreen from "../screens/AuthScreen";
 import IntroLanding from "../screens/IntroLanding";
-import LanguageSelect from "../screens/LanguageSelect";
 import UserTypeSelect from "../screens/UserTypeSelect";
 import ProtectedScreen from "../components/ProtectedScreen";
+import LanguageSearchModal from "../components/LanguageSearchModal";
+import LanguageLoadingOverlay from "../components/LanguageLoadingOverlay";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { OTHER_LANGUAGE_CODE, languageCatalog } from "../data/languageCatalog";
+import { ensureRuntimeLanguageBundle } from "../lib/runtimeLanguage";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -32,6 +35,7 @@ export default function LandingPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const [selectedLanguageCode, setSelectedLanguageCode] = useState("en");
+  const [isLanguagePickerOpen, setIsLanguagePickerOpen] = useState(false);
   const [selectedUserType, setSelectedUserType] = useState("neighbor");
   const [authMode, setAuthMode] = useState("login");
   const [currentScreen, setCurrentScreen] = useState("intro");
@@ -39,52 +43,104 @@ export default function LandingPage() {
   const [password, setPassword] = useState("");
   const [authMessage, setAuthMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
 
   const localizedLanguages = languages.map((language) => ({
     ...language,
     label: t(`languageNames.${language.key}`),
   }));
+  const introLanguages = [
+    ...localizedLanguages,
+    { code: OTHER_LANGUAGE_CODE, nativeName: "Other", key: "other", label: t("languageNames.other") },
+  ];
+
+  const applyLanguagePreference = async (code) => {
+    if (!code || code === OTHER_LANGUAGE_CODE) return;
+    setSelectedLanguageCode(code);
+    if (i18n.hasResourceBundle(code, "translation")) {
+      i18n.changeLanguage(code);
+      return;
+    }
+    setIsLanguageSwitching(true);
+    i18n.changeLanguage("en");
+    await ensureRuntimeLanguageBundle(i18n, code);
+    i18n.changeLanguage(code);
+    setIsLanguageSwitching(false);
+  };
+  const applyLanguagePreferenceSafe = (code) => {
+    applyLanguagePreference(code).catch(() => {
+      // keep app usable even if translation fetch fails
+    }).finally(() => {
+      setIsLanguageSwitching(false);
+    });
+  };
   const localizedUserTypes = userTypes.map((type) => ({
     ...type,
     title: t(`userType.options.${type.titleKey}`),
     subtitle: t(`userType.options.${type.subtitleKey}`),
   }));
+  const selectedLanguageMetadata = languageCatalog.find((language) => language.code === selectedLanguageCode);
+  const selectedLanguageLabel =
+    t(`languageNames.${languages.find((language) => language.code === selectedLanguageCode)?.key || ""}`, {
+      defaultValue: selectedLanguageMetadata?.englishName || "English",
+    }) || selectedLanguageMetadata?.englishName || "English";
 
   if (currentScreen === "intro") {
     return (
-      <IntroLanding
-        languages={localizedLanguages}
-        selectedLanguageCode={selectedLanguageCode}
-        copy={{
-          brandTitle: t("intro.brandTitle"),
-          guidePrefix: t("intro.guidePrefix"),
-          cityPhrase: t("intro.cityPhrase"),
-          languagePhrase: t("intro.languagePhrase"),
-          getStarted: t("intro.getStarted"),
-          floatingTransit: t("intro.floating.transit"),
-          floatingHealth: t("intro.floating.health"),
-          floatingLegal: t("intro.floating.legal"),
-          floatingFood: t("intro.floating.food"),
-          floatingHousing: t("intro.floating.housing"),
-          floatingEducation: t("intro.floating.education"),
-          supportedLanguagesAria: t("intro.supportedLanguagesAria"),
-        }}
-        onSelectLanguage={(code) => {
-          setSelectedLanguageCode(code);
-          i18n.changeLanguage(code);
-        }}
-        onGetStarted={() => setCurrentScreen("language")}
-      />
+      <>
+        <IntroLanding
+          languages={introLanguages}
+          selectedLanguageCode={selectedLanguageCode}
+          copy={{
+            brandTitle: t("intro.brandTitle"),
+            guidePrefix: t("intro.guidePrefix"),
+            cityPhrase: t("intro.cityPhrase"),
+            languagePhrase: t("intro.languagePhrase"),
+            getStarted: t("intro.getStarted"),
+            floatingTransit: t("intro.floating.transit"),
+            floatingHealth: t("intro.floating.health"),
+            floatingLegal: t("intro.floating.legal"),
+            floatingFood: t("intro.floating.food"),
+            floatingHousing: t("intro.floating.housing"),
+            floatingEducation: t("intro.floating.education"),
+            supportedLanguagesAria: t("intro.supportedLanguagesAria"),
+          }}
+          onSelectLanguage={(code) => {
+            if (code === OTHER_LANGUAGE_CODE) {
+              setIsLanguagePickerOpen(true);
+              return;
+            }
+            applyLanguagePreferenceSafe(code);
+          }}
+          languagePickerModal={
+            <LanguageSearchModal
+              isOpen={isLanguagePickerOpen}
+              selectedLanguageCode={selectedLanguageCode}
+              onClose={() => setIsLanguagePickerOpen(false)}
+              onSelectLanguage={(code) => {
+                applyLanguagePreferenceSafe(code);
+                setIsLanguagePickerOpen(false);
+              }}
+            />
+          }
+          onGetStarted={() => setCurrentScreen("auth")}
+        />
+        {isLanguageSwitching ? (
+          <LanguageLoadingOverlay
+            message={t("common.loadingLanguage", { defaultValue: "Translating your experience..." })}
+          />
+        ) : null}
+      </>
     );
   }
 
   if (currentScreen === "auth") {
     return (
       <AuthScreen
-        selectedLanguage={t(`languageNames.${languages.find((language) => language.code === selectedLanguageCode)?.key || "english"}`)}
+        selectedLanguage={selectedLanguageLabel}
         authMode={authMode}
         onSetAuthMode={setAuthMode}
-        onBack={() => setCurrentScreen("language")}
+        onBack={() => setCurrentScreen("intro")}
         email={email}
         password={password}
         onEmailChange={setEmail}
@@ -139,14 +195,13 @@ export default function LandingPage() {
           isSubmitting={isSubmitting}
           onContinue={async () => {
             setIsSubmitting(true);
-            const selectedLang = languages.find((l) => l.code === selectedLanguageCode);
             try {
               const res = await fetch(`${BACKEND_URL}/users/profile`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   user_id: user.id,
-                  language_code: selectedLang?.code ?? "en",
+                  language_code: selectedLanguageCode || "en",
                   persona_type: selectedUserType,
                 }),
               });
@@ -164,20 +219,5 @@ export default function LandingPage() {
       </ProtectedScreen>
     );
   }
-
-  return (
-    <LanguageSelect
-      languages={localizedLanguages}
-      selectedLanguageCode={selectedLanguageCode}
-      titleLine1={t("landing.titleLine1")}
-      titleLine2={t("landing.titleLine2")}
-      subtitle={t("landing.subtitle")}
-      continueLabel={t("landing.continue")}
-      onSelectLanguage={(code) => {
-        setSelectedLanguageCode(code);
-        i18n.changeLanguage(code);
-      }}
-      onContinue={() => setCurrentScreen("auth")}
-    />
-  );
+  return null;
 }
