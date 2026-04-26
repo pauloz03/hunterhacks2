@@ -8,5 +8,6 @@ my-app/.vite/
 
 backend/venv/
 backend/.venv/
+.venv/
 __pycache__/
 *.pyc

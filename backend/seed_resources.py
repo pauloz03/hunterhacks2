@@ -14,24 +14,96 @@ from dotenv import load_dotenv
 TARGET_NEIGHBORHOODS = {
     "jackson heights": {"borough": "queens"},
     "flushing": {"borough": "queens"},
+    "harlem": {"borough": "manhattan"},
+    "washington heights": {"borough": "manhattan"},
+    "chinatown": {"borough": "manhattan"},
+    "inwood": {"borough": "manhattan"},
+    "lower east side": {"borough": "manhattan"},
+    "east harlem": {"borough": "manhattan"},
     "sunset park": {"borough": "brooklyn"},
+    "bushwick": {"borough": "brooklyn"},
+    "crown heights": {"borough": "brooklyn"},
+    "bedford-stuyvesant": {"borough": "brooklyn"},
+    "flatbush": {"borough": "brooklyn"},
+    "east new york": {"borough": "brooklyn"},
+    "mott haven": {"borough": "bronx"},
+    "fordham": {"borough": "bronx"},
+    "tremont": {"borough": "bronx"},
+    "belmont": {"borough": "bronx"},
+    "kingsbridge": {"borough": "bronx"},
+    "south bronx": {"borough": "bronx"},
+    "st george": {"borough": "staten island"},
+    "st. george": {"borough": "staten island"},
+    "port richmond": {"borough": "staten island"},
+    "new brighton": {"borough": "staten island"},
+    "stapleton": {"borough": "staten island"},
+    "tompkinsville": {"borough": "staten island"},
+    "mariners harbor": {"borough": "staten island"},
 }
 
 # Working NYC Open Data endpoints (verified via curl).
 NYC_COMMUNITY_ORGS_URL = "https://data.cityofnewyork.us/resource/i4kb-6ab6.json"
 NYC_HOMEBASE_URL = "https://data.cityofnewyork.us/resource/ntcm-2w4k.json"
+NYC_SHELTERS_URL = "https://data.cityofnewyork.us/resource/ntcm-2v4f.json"
 
-GOOGLE_QUERIES = [
-    "food pantry Jackson Heights NYC",
-    "free clinic Jackson Heights NYC",
-    "immigrant services Jackson Heights NYC",
-    "food pantry Flushing NYC",
-    "free clinic Flushing NYC",
-    "immigrant services Flushing NYC",
-    "food pantry Sunset Park Brooklyn",
-    "free clinic Sunset Park Brooklyn",
-    "immigrant services Sunset Park Brooklyn",
+NEIGHBORHOOD_QUERY_TERMS = [
+    "food pantry",
+    "free clinic",
+    "community health center",
+    "immigrant services",
+    "legal aid",
+    "mutual aid",
+    "community center",
+    "affordable housing",
+    "emergency shelter",
+    "homeless shelter",
 ]
+
+
+BOROUGH_BOOST_QUERIES = [
+    "food pantry {borough} NYC",
+    "free clinic {borough} NYC",
+    "immigrant services {borough} NYC",
+    "legal aid {borough} NYC",
+    "affordable housing {borough} NYC",
+    "emergency shelter {borough} NYC",
+    "homeless shelter {borough} NYC",
+]
+
+
+def _titleize_neighborhood(value: str) -> str:
+    if value.lower() in {"st george", "st. george"}:
+        return "St. George"
+    return " ".join(part.capitalize() for part in value.split())
+
+
+def build_google_queries() -> List[str]:
+    queries: List[str] = []
+    seen: Set[str] = set()
+
+    for neighborhood, meta in TARGET_NEIGHBORHOODS.items():
+        borough = (meta.get("borough") or "").title()
+        display = _titleize_neighborhood(neighborhood)
+        for term in NEIGHBORHOOD_QUERY_TERMS:
+            q = f"{term} {display} {borough} NYC".strip()
+            key = q.lower()
+            if key not in seen:
+                seen.add(key)
+                queries.append(q)
+
+    # Extra borough-level searches (non-Queens) to reduce Queens-heavy skew.
+    for borough in ["Manhattan", "Brooklyn", "Bronx", "Staten Island"]:
+        for template in BOROUGH_BOOST_QUERIES:
+            q = template.format(borough=borough)
+            key = q.lower()
+            if key not in seen:
+                seen.add(key)
+                queries.append(q)
+
+    return queries
+
+
+GOOGLE_QUERIES = build_google_queries()
 
 CSV_COLUMNS = [
     "name",
@@ -121,6 +193,8 @@ def infer_target_neighborhood(address: str, neighborhood: str, borough: str) -> 
             return "Flushing", "Queens"
     if "brooklyn" in haystack and "sunset park" in haystack:
         return "Sunset Park", "Brooklyn"
+    if "staten island" in haystack and ("st george" in haystack or "st. george" in haystack):
+        return "St. George", "Staten Island"
 
     return "", borough.title() if borough else ""
 
@@ -253,8 +327,52 @@ def pull_nyc_homebase() -> List[Dict[str, str]]:
     return out
 
 
+def pull_nyc_shelters() -> List[Dict[str, str]]:
+    rows = fetch_json_get(NYC_SHELTERS_URL, params={"$limit": "5000"})
+    if not isinstance(rows, list):
+        return []
+
+    out: List[Dict[str, str]] = []
+    for row in rows:
+        name = first_nonempty(row, ["facility_name", "name", "provider"])
+        address = first_nonempty(row, ["address", "street_address", "location_1_location"])
+        borough = normalize_borough(first_nonempty(row, ["borough", "boro"]))
+        neighborhood = first_nonempty(row, ["neighborhood", "nta"])
+        phone = first_nonempty(row, ["phone", "phone_number"])
+        latitude = first_nonempty(row, ["latitude"])
+        longitude = first_nonempty(row, ["longitude"])
+
+        if not name or not is_target_area(address, neighborhood, borough):
+            continue
+
+        nh, bor = infer_target_neighborhood(address, neighborhood, borough)
+        out.append(
+            make_resource(
+                name=name,
+                category="housing",
+                address=address,
+                borough=bor or borough.title(),
+                neighborhood=nh or neighborhood,
+                latitude=latitude,
+                longitude=longitude,
+                phone=phone,
+                website="",
+                hours="",
+                is_free="unknown",
+                description="NYC Open Data: shelter location.",
+            )
+        )
+    return out
+
+
 def category_from_query(query: str) -> str:
     q = query.lower()
+    if "housing" in q or "shelter" in q:
+        return "housing"
+    if "legal" in q:
+        return "legal-rights"
+    if "community" in q or "mutual aid" in q:
+        return "community"
     if "pantry" in q:
         return "food"
     if "clinic" in q:
@@ -396,13 +514,16 @@ def main() -> None:
     print("[info] pulling NYC Open Data...")
     org_rows = pull_nyc_community_orgs()
     homebase_rows = pull_nyc_homebase()
-    print(f"[info] NYC rows: community_orgs={len(org_rows)} homebase={len(homebase_rows)}")
+    shelter_rows = pull_nyc_shelters()
+    print(
+        f"[info] NYC rows: community_orgs={len(org_rows)} homebase={len(homebase_rows)} shelters={len(shelter_rows)}"
+    )
 
     print("[info] pulling Google Places API (New)...")
     google_rows = pull_google_places(google_api_key)
     print(f"[info] Google rows: {len(google_rows)}")
 
-    all_rows = org_rows + homebase_rows + google_rows
+    all_rows = org_rows + homebase_rows + shelter_rows + google_rows
     deduped = dedupe_resources(all_rows)
     print(f"[info] total rows after dedupe: {len(deduped)}")
 
