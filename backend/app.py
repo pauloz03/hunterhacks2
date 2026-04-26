@@ -305,6 +305,15 @@ def unsave_resource():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/translate", methods=["POST"])
+def translate_text():
+    body = request.get_json(silent=True) or {}
+    result = translate_text_internal(body)
+    if result.get("translated"):
+        return jsonify(result)
+    return jsonify({"error": result.get("error", "translate_failed"), **result}), 502
+
+
 def translate_text_internal(payload):
     if not google_translate_api_key:
         return {"translatedText": payload.get("text", ""), "translated": False, "error": "missing_google_translate_key"}
