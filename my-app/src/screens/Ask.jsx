@@ -15,14 +15,16 @@ export default function AskScreen() {
           <p className="ask-subtitle">{t("ask.subtitle")}</p>
         </header>
 
-        <section className="ask-chat">
-          <article className="ask-bubble ask-bubble-assistant">
-            {t("ask.sample.assistant1")}
-          </article>
-          <article className="ask-bubble ask-bubble-user">{t("ask.sample.user1")}</article>
-          <article className="ask-bubble ask-bubble-assistant">
-            {t("ask.sample.assistant2")}
-          </article>
+        <section className="ask-chat-card">
+          <section className="ask-chat">
+            <article className="ask-bubble ask-bubble-assistant">
+              {t("ask.sample.assistant1")}
+            </article>
+            <article className="ask-bubble ask-bubble-user">{t("ask.sample.user1")}</article>
+            <article className="ask-bubble ask-bubble-assistant">
+              {t("ask.sample.assistant2")}
+            </article>
+          </section>
         </section>
 
         <div className="ask-quick-prompts" aria-label={t("ask.suggestedPromptsAria")}>

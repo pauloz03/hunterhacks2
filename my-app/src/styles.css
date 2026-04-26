@@ -1097,6 +1097,9 @@ body {
   width: min(100%, 560px);
   margin: 0 auto;
   padding: 16px 16px 24px;
+  min-height: calc(100dvh - 92px);
+  display: flex;
+  flex-direction: column;
 }
 
 .ask-header {
@@ -1125,6 +1128,19 @@ body {
   gap: 10px;
 }
 
+.ask-chat-card {
+  margin-top: 14px;
+  border-radius: 20px;
+  border: 1px solid #d9ded8;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 22px rgba(24, 31, 49, 0.12);
+  padding: 12px 12px 10px;
+}
+
+.ask-chat-card .ask-chat {
+  margin-top: 0;
+}
+
 .ask-bubble {
   max-width: 88%;
   border-radius: 16px;
@@ -1148,10 +1164,11 @@ body {
 }
 
 .ask-quick-prompts {
-  margin-top: 14px;
+  margin-top: auto;
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  padding-top: 14px;
 }
 
 .ask-chip {
@@ -1724,6 +1741,7 @@ body {
 
   .ask-content {
     padding: 12px 12px 20px;
+    min-height: calc(100dvh - 88px);
   }
 
   .profile-content {
