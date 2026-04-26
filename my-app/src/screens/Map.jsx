@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { geolocationService } from "../services/geolocationService";
 
 export default function MapScreen({ userType = "neighbor", onNavigate }) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const userMarkerRef = useRef(null);
   const [mapError, setMapError] = useState("");
 
   useEffect(() => {
@@ -31,9 +33,39 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
 
       mapRef.current = map;
 
-      map.on("load", () => {
+      map.on("load", async () => {
         setMapError("");
         map.resize();
+
+        try {
+          const { latitude, longitude } = await geolocationService.getCurrentPosition();
+          const userCoords = [longitude, latitude];
+
+          map.flyTo({
+            center: userCoords,
+            zoom: 14,
+            essential: true,
+          });
+
+          if (userMarkerRef.current) {
+            userMarkerRef.current.remove();
+          }
+
+          const userLocationEl = document.createElement("div");
+          userLocationEl.className = "user-location-dot";
+          userLocationEl.innerHTML = '<span class="user-location-dot__pulse"></span><span class="user-location-dot__core"></span>';
+
+          userMarkerRef.current = new mapboxgl.Marker({
+            element: userLocationEl,
+            anchor: "center",
+          })
+            .setLngLat(userCoords)
+            .addTo(map);
+        } catch (locationError) {
+          const message =
+            locationError instanceof Error ? locationError.message : "Unable to access your location.";
+          setMapError(message);
+        }
       });
 
       map.on("error", () => {
@@ -44,6 +76,11 @@ export default function MapScreen({ userType = "neighbor", onNavigate }) {
     }
 
     return () => {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+        userMarkerRef.current = null;
+      }
+
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

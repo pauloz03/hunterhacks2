@@ -913,6 +913,48 @@ body {
   font-size: 14px;
 }
 
+.user-location-dot {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+}
+
+.user-location-dot__pulse {
+  position: absolute;
+  width: 23px;
+  height: 23px;
+  border-radius: 999px;
+  background: rgba(49, 124, 235, 0.28);
+  animation: user-location-pulse 1.8s ease-out infinite;
+}
+
+.user-location-dot__core {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: #1f6feb;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes user-location-pulse {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
 .map-grid {
   position: absolute;
   inset: 0;
